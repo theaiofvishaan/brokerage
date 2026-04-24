@@ -58,6 +58,12 @@ const CARDS = [
     desc: 'Tampa Bay property data',
     href: '/market',
   },
+  {
+    num: '04',
+    title: 'Documents',
+    desc: 'Shared files and resources',
+    href: '/documents',
+  },
 ]
 
 export default function DashboardPage() {
@@ -71,9 +77,10 @@ export default function DashboardPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/'); return }
-      const meta = user.user_metadata
-      if (meta?.full_name) setName(meta.full_name.split(' ')[0])
-      else if (user.email) setName(user.email.split('@')[0])
+      if (user.email) {
+        const raw = user.email.split('@')[0].split('.')[0]
+        setName(raw.charAt(0).toUpperCase() + raw.slice(1))
+      }
     })
 
     supabase.from('contacts').select('id', { count: 'exact', head: true }).then(({ count }) => {
@@ -141,13 +148,14 @@ export default function DashboardPage() {
       {/* Marquee strip */}
       <Marquee />
 
-      {/* Cards grid */}
+      {/* Cards grid — 2×2 desktop, 1 col mobile */}
       <section
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           borderTop: '0.5px solid rgba(180, 160, 120, 0.2)',
         }}
+        className="dashboard-grid"
       >
         {CARDS.map((card, i) => (
           <motion.div
@@ -156,7 +164,8 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              borderRight: i < 2 ? '0.5px solid rgba(180, 160, 120, 0.2)' : 'none',
+              borderRight: i % 2 === 0 ? '0.5px solid rgba(180, 160, 120, 0.2)' : 'none',
+              borderBottom: i < 2 ? '0.5px solid rgba(180, 160, 120, 0.2)' : 'none',
             }}
           >
             <DashboardCard

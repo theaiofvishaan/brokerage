@@ -118,7 +118,7 @@ export default function LoginPage() {
         }}
       >
         {/* Wordmark */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <h1
             style={{
               fontFamily: 'var(--font-cormorant), var(--font-display)',
@@ -233,15 +233,16 @@ export default function LoginPage() {
               type="submit"
               disabled={loading || transitioning}
               style={{
-                width: 300,
-                height: 48,
-                background: 'var(--gold)',
-                color: 'var(--black)',
+                width: 260,
+                height: 44,
+                background: '#8B7248',
+                color: '#FAFAF6',
                 fontFamily: 'var(--font-ui)',
                 fontSize: 9,
                 letterSpacing: '0.5em',
                 textTransform: 'uppercase',
                 border: 'none',
+                borderRadius: 2,
                 opacity: loading ? 0.7 : 1,
                 transition: 'opacity 0.2s',
               }}

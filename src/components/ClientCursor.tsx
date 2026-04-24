@@ -41,8 +41,8 @@ export default function ClientCursor() {
         dotRef.current.style.transform = `translate(${mouse.current.x - 4}px, ${mouse.current.y - 4}px)`
       }
       if (ringRef.current) {
-        ring.current.x = lerp(ring.current.x, mouse.current.x, 0.12)
-        ring.current.y = lerp(ring.current.y, mouse.current.y, 0.12)
+        ring.current.x = lerp(ring.current.x, mouse.current.x, 0.22)
+        ring.current.y = lerp(ring.current.y, mouse.current.y, 0.22)
         ringRef.current.style.transform = `translate(${ring.current.x - 12}px, ${ring.current.y - 12}px) scale(${hovered ? 1.8 : 1})`
       }
       rafRef.current = requestAnimationFrame(animate)

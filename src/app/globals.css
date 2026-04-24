@@ -167,6 +167,13 @@ input:-webkit-autofill:focus {
   color: var(--gold);
 }
 
+/* Dashboard 2x2 grid — single column on mobile */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Nav link */
 .nav-link {
   position: relative;

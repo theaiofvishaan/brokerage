@@ -8,7 +8,8 @@ import { supabase } from '@/lib/supabase'
 const NAV_ITEMS = [
   { label: 'Contacts', href: '/contacts' },
   { label: 'Presentations', href: '/presentations' },
-  { label: 'Market', href: '/market' },
+  { label: 'Documents', href: '/documents' },
+  { label: 'Market Intelligence', href: '/market' },
 ]
 
 export default function SolusNav() {

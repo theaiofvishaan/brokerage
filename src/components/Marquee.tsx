@@ -5,7 +5,7 @@ interface MarqueeProps {
   speed?: number
 }
 
-const DEFAULT_TEXT = 'SOLUS · REAL ESTATE PARTNERS · TAMPA BAY · FLORIDA ·'
+const DEFAULT_TEXT = 'SOLUS · REAL ESTATE PARTNERS · PRIVATE · PRECISION · RESULTS ·'
 
 export default function Marquee({ text = DEFAULT_TEXT, speed = 25 }: MarqueeProps) {
   const repeated = `${text}   ${text}   ${text}   ${text}   `

@@ -1,26 +1,181 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --black: #080806;
+  --gold: #C9A96E;
+  --gold-dim: #8B7248;
+  --gold-bright: #E8C98A;
+  --linen: #EAE4D6;
+  --white: #FAFAF6;
+  --text-dark: #1A1510;
+  /* Font aliases — next/font sets the CSS variables, these aliases map them */
+  --font-display: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  --font-ui: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  --border: rgba(180, 160, 120, 0.15);
+  --hairline: rgba(180, 160, 120, 0.2);
+  --hairline-light: rgba(180, 160, 120, 0.12);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
+  background: var(--white);
+  color: var(--text-dark);
+  overflow-x: hidden;
+  cursor: none;
 }
+
+*, a, button, input, textarea, select, [role="button"] {
+  cursor: none !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+.dark-bg::-webkit-scrollbar-thumb { background: var(--gold); }
+
+/* Text selection */
+::selection {
+  background: rgba(201, 169, 110, 0.2);
+  color: var(--text-dark);
+}
+
+/* Input resets */
+input, textarea, select { appearance: none; outline: none; font-family: inherit; }
+
+/* Dark bg autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--black) inset;
+  -webkit-text-fill-color: var(--gold);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Grid lines for dark backgrounds */
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(201, 169, 110, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 169, 110, 0.06) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* Hairline dividers */
+.hairline {
+  height: 0.5px;
+  background: var(--hairline);
+  border: none;
+  width: 100%;
+}
+
+/* Marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee var(--marquee-speed, 25s) linear infinite;
+  will-change: transform;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(201, 169, 110, 0.05) 25%,
+    rgba(201, 169, 110, 0.12) 50%,
+    rgba(201, 169, 110, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+.skeleton-linen {
+  background: linear-gradient(90deg,
+    rgba(180, 160, 120, 0.08) 25%,
+    rgba(180, 160, 120, 0.18) 50%,
+    rgba(180, 160, 120, 0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Gold flash save confirmation */
+@keyframes goldFlash {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.gold-flash { animation: goldFlash 1.8s var(--ease-expo) forwards; }
+
+/* Gold bottom wipe on hover */
+.gold-wipe {
+  position: relative;
+}
+.gold-wipe::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-expo);
+}
+.gold-wipe:hover::after { transform: scaleX(1); }
+
+/* Filter pill */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  font-family: var(--font-ui);
+  font-size: 8px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  border: 0.5px solid var(--hairline);
+  color: var(--gold-dim);
+  background: transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.filter-pill.active {
+  background: var(--gold);
+  color: var(--text-dark);
+  border-color: var(--gold);
+}
+.filter-pill:hover:not(.active) {
+  border-color: rgba(201, 169, 110, 0.4);
+  color: var(--gold);
+}
+
+/* Nav link */
+.nav-link {
+  position: relative;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(26, 21, 16, 0.5);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.nav-link:hover, .nav-link.active { color: var(--text-dark); }

@@ -1,65 +1,256 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
+import MagneticButton from '@/components/MagneticButton'
+
+const NoiseSVG = () => (
+  <svg
+    style={{
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      opacity: 0.035,
+      pointerEvents: 'none',
+      zIndex: 1,
+      mixBlendMode: 'overlay',
+    }}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <filter id="noise-login">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise-login)" />
+  </svg>
+)
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) router.push('/dashboard')
+    })
+  }, [router])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (loading) return
+    setError(null)
+    setLoading(true)
+
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (authError) {
+      setError('Invalid credentials.')
+      setLoading(false)
+      return
+    }
+
+    setTransitioning(true)
+    setTimeout(() => router.push('/dashboard'), 600)
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div
+      data-cursor-dark
+      className="dark-bg grid-lines"
+      style={{
+        minHeight: '100vh',
+        background: 'var(--black)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <NoiseSVG />
+
+      {/* Radial glow */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201, 169, 110, 0.05) 0%, transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      {/* Gold wipe transition overlay */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: transitioning ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'var(--gold)',
+          transformOrigin: 'left',
+          zIndex: 9000,
+          pointerEvents: 'none',
+        }}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          width: '100%',
+          maxWidth: 380,
+          padding: '0 32px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        {/* Wordmark */}
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-cormorant), var(--font-display)',
+              fontSize: 72,
+              fontWeight: 300,
+              letterSpacing: '0.35em',
+              color: 'var(--gold)',
+              lineHeight: 1,
+              paddingLeft: '0.35em',
+            }}
+          >
+            SOLUS
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <div
+            style={{
+              width: 100,
+              height: '0.5px',
+              background: 'var(--gold-dim)',
+              margin: '20px auto',
+              opacity: 0.6,
+            }}
+          />
+          <p
+            style={{
+              fontFamily: 'var(--font-ui)',
+              fontSize: 8,
+              letterSpacing: '0.5em',
+              color: 'var(--gold-dim)',
+              textTransform: 'uppercase',
+            }}
+          >
+            Real Estate Partners
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          {/* Email */}
+          <div style={{ marginBottom: 20 }}>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="EMAIL"
+              required
+              autoComplete="email"
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: '0.5px solid #3a3020',
+                color: 'var(--gold)',
+                fontFamily: 'var(--font-cormorant), var(--font-display)',
+                fontSize: 20,
+                padding: '12px 0',
+                letterSpacing: '0.05em',
+                transition: 'border-color 0.25s',
+              }}
+              className="dark-input"
+              onFocus={e => { e.currentTarget.style.borderBottomColor = 'var(--gold)' }}
+              onBlur={e => { e.currentTarget.style.borderBottomColor = '#3a3020' }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          </div>
+
+          {/* Password */}
+          <div style={{ marginBottom: 40 }}>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="ACCESS"
+              required
+              autoComplete="current-password"
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: '0.5px solid #3a3020',
+                color: 'var(--gold)',
+                fontFamily: 'var(--font-cormorant), var(--font-display)',
+                fontSize: 20,
+                padding: '12px 0',
+                letterSpacing: '0.05em',
+                transition: 'border-color 0.25s',
+              }}
+              className="dark-input"
+              onFocus={e => { e.currentTarget.style.borderBottomColor = 'var(--gold)' }}
+              onBlur={e => { e.currentTarget.style.borderBottomColor = '#3a3020' }}
+            />
+          </div>
+
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                fontFamily: 'var(--font-ui)',
+                fontSize: 10,
+                letterSpacing: '0.2em',
+                color: 'rgba(192, 97, 74, 0.9)',
+                textTransform: 'uppercase',
+                marginBottom: 20,
+                textAlign: 'center',
+              }}
+            >
+              {error}
+            </motion.p>
+          )}
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <MagneticButton
+              type="submit"
+              disabled={loading || transitioning}
+              style={{
+                width: 300,
+                height: 48,
+                background: 'var(--gold)',
+                color: 'var(--black)',
+                fontFamily: 'var(--font-ui)',
+                fontSize: 9,
+                letterSpacing: '0.5em',
+                textTransform: 'uppercase',
+                border: 'none',
+                opacity: loading ? 0.7 : 1,
+                transition: 'opacity 0.2s',
+              }}
+            >
+              {loading ? 'Verifying…' : 'Enter'}
+            </MagneticButton>
+          </div>
+        </form>
+      </motion.div>
     </div>
-  );
+  )
 }

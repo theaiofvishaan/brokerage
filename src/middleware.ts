@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
 
   const supabase = createServerClient(
@@ -31,5 +31,11 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/contacts/:path*', '/presentations/:path*', '/market/:path*'],
+  matcher: [
+    '/dashboard/:path*',
+    '/contacts/:path*',
+    '/presentations/:path*',
+    '/documents/:path*',
+    '/market/:path*',
+  ],
 }

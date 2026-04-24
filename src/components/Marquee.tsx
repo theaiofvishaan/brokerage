@@ -1,20 +1,15 @@
 'use client'
 
-interface MarqueeProps {
-  text?: string
-  speed?: number
-}
+const TEXT = 'SOLUS · REAL ESTATE PARTNERS · PRIVATE · PRECISION · RESULTS · '
 
-const DEFAULT_TEXT = 'SOLUS · REAL ESTATE PARTNERS · PRIVATE · PRECISION · RESULTS ·'
-
-export default function Marquee({ text = DEFAULT_TEXT, speed = 25 }: MarqueeProps) {
-  const repeated = `${text}   ${text}   ${text}   ${text}   `
+export default function Marquee() {
+  const repeated = `${TEXT}${TEXT}${TEXT}${TEXT}`
 
   return (
     <div
       style={{
-        borderTop: '0.5px solid var(--hairline)',
-        borderBottom: '0.5px solid var(--hairline)',
+        borderTop: '0.5px solid rgba(180,160,120,0.2)',
+        borderBottom: '0.5px solid rgba(180,160,120,0.2)',
         overflow: 'hidden',
         padding: '14px 0',
       }}
@@ -23,7 +18,7 @@ export default function Marquee({ text = DEFAULT_TEXT, speed = 25 }: MarqueeProp
         style={{
           display: 'flex',
           whiteSpace: 'nowrap',
-          '--marquee-speed': `${speed}s`,
+          '--marquee-speed': '30s',
         } as React.CSSProperties}
       >
         <span
@@ -32,7 +27,7 @@ export default function Marquee({ text = DEFAULT_TEXT, speed = 25 }: MarqueeProp
             fontFamily: 'var(--font-ui)',
             fontSize: 9,
             letterSpacing: '0.5em',
-            color: 'rgba(154, 138, 112, 0.7)',
+            color: '#8a7a60',
             textTransform: 'uppercase',
           }}
         >
@@ -45,7 +40,7 @@ export default function Marquee({ text = DEFAULT_TEXT, speed = 25 }: MarqueeProp
             fontFamily: 'var(--font-ui)',
             fontSize: 9,
             letterSpacing: '0.5em',
-            color: 'rgba(154, 138, 112, 0.7)',
+            color: '#8a7a60',
             textTransform: 'uppercase',
           }}
         >

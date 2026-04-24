@@ -10,31 +10,54 @@ import SolusNav from '@/components/SolusNav'
 import RevealText from '@/components/RevealText'
 import AddContactModal from '@/components/AddContactModal'
 
-const DEFAULT_PILLS = ['ALL', 'ARCHITECT', 'ATTORNEY', 'CIVIL ENGINEER', 'REAL ESTATE AGENT', 'SEAWALL', 'POOLS', 'SIGNS', 'DEVELOPER', 'INSURANCE', 'LANDSCAPE ARCHITECT', 'GENERAL CONTRACTOR']
+const FILTER_PILLS = [
+  'ALL', 'REAL ESTATE', 'INTERNAL', 'CONSTRUCTION', 'LEGAL',
+  'DESIGN', 'BUILDERS', 'GOVERNMENT', 'PERSONAL', 'OTHER',
+]
 
-function getInitials(first: string | null, last: string | null) {
-  return `${first?.[0] ?? ''}${last?.[0] ?? ''}`.toUpperCase() || '?'
+const CONSTRUCTION_TYPES = [
+  'general contractor', 'civil engineer', 'architect', 'landscape architect',
+  'surveyor', 'geotech', 'estimator', 'demo', 'demolition', 'demo / demolition',
+  'building materials', 'draftsman', 'environmental', 'hvac', 'elevator',
+  'seawall', 'pools', 'fence',
+]
+
+const DESIGN_TYPES = [
+  'interior design', 'interior designer', 'video and photo',
+  'staging', 'branding', 'signs', 'photography',
+]
+
+function matchesFilter(contact: Contact, filter: string): boolean {
+  const vt = (contact.vendor_type ?? '').toLowerCase()
+  switch (filter) {
+    case 'ALL': return true
+    case 'REAL ESTATE': return vt.includes('real estate') || vt.includes('realtor')
+    case 'INTERNAL': return vt.includes('internal')
+    case 'CONSTRUCTION': return CONSTRUCTION_TYPES.some(t => vt.includes(t))
+    case 'LEGAL': return vt.includes('attorney') || vt === 'title' || vt === 'land use attorney'
+    case 'DESIGN': return DESIGN_TYPES.some(t => vt.includes(t))
+    case 'BUILDERS': return vt.includes('builder')
+    case 'GOVERNMENT': return vt === 'government'
+    case 'PERSONAL': return vt === 'personal'
+    case 'OTHER': {
+      if (!vt) return true
+      return ![
+        'REAL ESTATE', 'INTERNAL', 'CONSTRUCTION', 'LEGAL',
+        'DESIGN', 'BUILDERS', 'GOVERNMENT', 'PERSONAL',
+      ].some(f => f !== 'OTHER' && matchesFilter(contact, f))
+    }
+    default: return true
+  }
 }
 
-function SkeletonRow() {
-  return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: '48px 1fr 180px 140px 24px',
-      alignItems: 'center',
-      gap: 24,
-      padding: '20px 0',
-      borderBottom: '0.5px solid rgba(240, 232, 220, 0.8)',
-    }}>
-      <div className="skeleton-linen" style={{ width: 40, height: 40, borderRadius: '50%' }} />
-      <div>
-        <div className="skeleton-linen" style={{ height: 14, width: '60%', marginBottom: 8 }} />
-        <div className="skeleton-linen" style={{ height: 10, width: '40%' }} />
-      </div>
-      <div className="skeleton-linen" style={{ height: 10, width: '70%' }} />
-      <div className="skeleton-linen" style={{ height: 10, width: '60%' }} />
-    </div>
-  )
+function getInitials(c: Contact) {
+  if (c.first_name && c.last_name) {
+    return `${c.first_name[0]}${c.last_name[0]}`.toUpperCase()
+  }
+  if (c.organization) {
+    return c.organization.slice(0, 2).toUpperCase()
+  }
+  return '?'
 }
 
 export default function ContactsPage() {
@@ -45,29 +68,18 @@ export default function ContactsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('ALL')
   const [sort, setSort] = useState('name_asc')
-  const [vendorTypes, setVendorTypes] = useState<string[]>(DEFAULT_PILLS)
   const [modalOpen, setModalOpen] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   const fetchContacts = useCallback(async () => {
     const { data } = await supabase.from('contacts').select('*').order('first_name', { ascending: true })
-    if (data) {
-      setContacts(data as Contact[])
-      const types = Array.from(new Set(data.map((c: Contact) => c.vendor_type).filter(Boolean))) as string[]
-      if (types.length > 0) {
-        const merged = Array.from(new Set(['ALL', ...DEFAULT_PILLS.slice(1), ...types]))
-        setVendorTypes(merged)
-      }
-    }
+    if (data) setContacts(data as Contact[])
     setLoading(false)
   }, [])
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.push('/')
-    })
     fetchContacts()
-  }, [router, fetchContacts])
+  }, [fetchContacts])
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -80,7 +92,7 @@ export default function ContactsPage() {
     let list = [...contacts]
 
     if (activeFilter !== 'ALL') {
-      list = list.filter(c => c.vendor_type?.toUpperCase() === activeFilter)
+      list = list.filter(c => matchesFilter(c, activeFilter))
     }
 
     if (debouncedSearch.trim()) {
@@ -106,172 +118,168 @@ export default function ContactsPage() {
     return list
   }, [contacts, debouncedSearch, activeFilter, sort])
 
-  const lastUpdated = useMemo(() => {
-    if (!contacts.length) return null
-    const latest = contacts.reduce((a, b) => a.created_at > b.created_at ? a : b)
-    return new Date(latest.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-  }, [contacts])
-
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+    <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
       <SolusNav />
 
-      <main style={{ padding: '0 64px' }}>
-        {/* Header */}
-        <div style={{ padding: '56px 0 32px' }}>
-          <RevealText
-            text="Directory"
-            tag="h1"
-            style={{
-              fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 60,
-              fontWeight: 300,
-              color: 'var(--text-dark)',
-              letterSpacing: '0.02em',
-              marginBottom: 12,
-            }}
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: 10,
-              letterSpacing: '0.3em',
-              color: 'var(--gold)',
-              textTransform: 'uppercase',
-            }}
-          >
-            {loading ? '— loading' : `— ${contacts.length} contacts`}
-          </motion.p>
-        </div>
-
-        {/* Controls */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          style={{ marginBottom: 24 }}
+      {/* Header */}
+      <div style={{ padding: '120px 64px 40px' }}>
+        <RevealText
+          text="Directory"
+          tag="h1"
+          style={{
+            fontFamily: 'var(--font-cormorant), var(--font-display)',
+            fontSize: 64,
+            fontWeight: 300,
+            color: '#1A1510',
+            letterSpacing: '0.02em',
+            marginBottom: 12,
+          }}
+        />
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 11,
+            letterSpacing: '0.1em',
+            color: '#C9A96E',
+          }}
         >
-          <div style={{
-            display: 'flex',
-            gap: 24,
-            alignItems: 'center',
-            borderBottom: '0.5px solid var(--hairline)',
-            paddingBottom: 16,
-          }}>
-            <input
-              type="text"
-              value={search}
-              onChange={handleSearchChange}
-              placeholder="Search contacts…"
+          {loading ? '— loading' : `— ${contacts.length} contacts`}
+        </motion.p>
+      </div>
+
+      {/* Controls row */}
+      <div style={{ padding: '0 64px', display: 'flex', alignItems: 'center', gap: 24 }}>
+        <input
+          type="text"
+          value={search}
+          onChange={handleSearchChange}
+          placeholder="Search by name, organization..."
+          style={{
+            flex: 1,
+            background: 'transparent',
+            border: 'none',
+            borderBottom: '0.5px solid #D0C8B8',
+            color: '#1A1510',
+            fontFamily: 'var(--font-ui)',
+            fontSize: 13,
+            padding: '12px 0',
+            outline: 'none',
+          }}
+        />
+        <select
+          value={sort}
+          onChange={e => setSort(e.target.value)}
+          style={{
+            background: 'transparent',
+            border: '0.5px solid #D0C8B8',
+            color: '#8a7a60',
+            fontFamily: 'var(--font-ui)',
+            fontSize: 10,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            padding: '10px 20px',
+            outline: 'none',
+            flexShrink: 0,
+          }}
+        >
+          <option value="name_asc">Name A–Z</option>
+          <option value="name_desc">Name Z–A</option>
+          <option value="created_desc">Recently Added</option>
+          <option value="vendor_type">Type</option>
+        </select>
+      </div>
+
+      {/* Filter pills */}
+      <div
+        style={{
+          padding: '20px 64px',
+          display: 'flex',
+          gap: 8,
+          flexWrap: 'nowrap',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
+        <style>{`.filter-scroll::-webkit-scrollbar { display: none; }`}</style>
+        {FILTER_PILLS.map(pill => (
+          <button
+            key={pill}
+            onClick={() => setActiveFilter(pill)}
+            className={`filter-pill${activeFilter === pill ? ' active' : ''}`}
+          >
+            {pill}
+          </button>
+        ))}
+      </div>
+
+      {/* Contact rows */}
+      <div style={{ padding: '0 48px' }}>
+        {loading ? (
+          Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
               style={{
-                flex: 1,
-                background: 'transparent',
-                border: 'none',
-                borderBottom: '0.5px solid transparent',
-                color: 'var(--text-dark)',
-                fontFamily: 'var(--font-ui)',
-                fontSize: 13,
-                padding: '8px 0',
-                outline: 'none',
-              }}
-            />
-            <div style={{ height: 20, width: '0.5px', background: 'var(--hairline)', flexShrink: 0 }} />
-            <select
-              value={sort}
-              onChange={e => setSort(e.target.value)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--gold-dim)',
-                fontFamily: 'var(--font-ui)',
-                fontSize: 9,
-                letterSpacing: '0.3em',
-                textTransform: 'uppercase',
-                outline: 'none',
-                flexShrink: 0,
+                display: 'grid',
+                gridTemplateColumns: '56px 1fr 200px 160px 24px',
+                alignItems: 'center',
+                gap: 24,
+                padding: '18px 16px',
+                borderBottom: '0.5px solid #F0E8DC',
               }}
             >
-              <option value="name_asc">Name A–Z</option>
-              <option value="name_desc">Name Z–A</option>
-              <option value="created_desc">Recently Added</option>
-              <option value="vendor_type">Type</option>
-            </select>
-          </div>
-
-          {/* Filter pills */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 16, paddingBottom: 8 }}>
-            {vendorTypes.map(type => (
-              <button
-                key={type}
-                onClick={() => setActiveFilter(type)}
-                className={`filter-pill${activeFilter === type ? ' active' : ''}`}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Hairline */}
-        <div className="hairline" />
-
-        {/* Contact rows */}
-        <div>
-          {loading ? (
-            Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
-          ) : filtered.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              style={{ padding: '80px 0', textAlign: 'center' }}
-            >
-              <p style={{
-                fontFamily: 'var(--font-cormorant), var(--font-display)',
-                fontSize: 28,
-                fontWeight: 300,
-                color: 'rgba(180, 160, 120, 0.5)',
-              }}>
-                No contacts found
-              </p>
-            </motion.div>
-          ) : (
-            <AnimatePresence>
-              {filtered.map((contact, i) => (
-                <ContactRow key={contact.id} contact={contact} index={i} />
-              ))}
-            </AnimatePresence>
-          )}
-        </div>
-
-        {/* Footer */}
-        {!loading && (
+              <div className="skeleton-linen" style={{ width: 44, height: 44, borderRadius: '50%' }} />
+              <div>
+                <div className="skeleton-linen" style={{ height: 14, width: '60%', marginBottom: 8 }} />
+                <div className="skeleton-linen" style={{ height: 10, width: '40%' }} />
+              </div>
+              <div className="skeleton-linen" style={{ height: 10, width: '70%' }} />
+              <div className="skeleton-linen" style={{ height: 10, width: '60%' }} />
+            </div>
+          ))
+        ) : filtered.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '24px 0 64px',
-              borderTop: '0.5px solid var(--hairline)',
-            }}
+            style={{ padding: '80px 0', textAlign: 'center' }}
           >
-            <span style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'rgba(154, 138, 112, 0.6)', letterSpacing: '0.2em' }}>
-              {filtered.length} contacts
-            </span>
-            {lastUpdated && (
-              <span style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'rgba(154, 138, 112, 0.6)', letterSpacing: '0.2em' }}>
-                Last updated {lastUpdated}
-              </span>
-            )}
+            <p style={{
+              fontFamily: 'var(--font-cormorant), var(--font-display)',
+              fontSize: 28,
+              fontWeight: 300,
+              color: 'rgba(180,160,120,0.5)',
+            }}>
+              No contacts found
+            </p>
           </motion.div>
+        ) : (
+          <AnimatePresence>
+            {filtered.map((contact, i) => (
+              <ContactRow key={contact.id} contact={contact} index={i} />
+            ))}
+          </AnimatePresence>
         )}
-      </main>
+      </div>
 
-      {/* Add contact FAB */}
+      {/* Footer */}
+      {!loading && (
+        <div style={{ padding: '24px 64px 64px' }}>
+          <span style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 10,
+            color: '#b0a080',
+            letterSpacing: '0.2em',
+          }}>
+            {filtered.length} contacts &middot; SOLUS Directory
+          </span>
+        </div>
+      )}
+
+      {/* FAB */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -281,22 +289,22 @@ export default function ContactsPage() {
         whileTap={{ scale: 0.94 }}
         style={{
           position: 'fixed',
-          bottom: 40,
-          right: 40,
+          bottom: 32,
+          right: 32,
           width: 56,
           height: 56,
           borderRadius: '50%',
-          background: 'var(--gold)',
-          color: 'var(--black)',
+          background: '#C9A96E',
+          color: '#080806',
           border: 'none',
           fontSize: 24,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(201, 169, 110, 0.25)',
+          boxShadow: '0 8px 32px rgba(201,169,110,0.25)',
           zIndex: 50,
         }}
-        data-hover
+        data-cursor="hover"
       >
         +
       </motion.button>
@@ -312,13 +320,14 @@ export default function ContactsPage() {
 
 function ContactRow({ contact, index }: { contact: Contact; index: number }) {
   const [hovered, setHovered] = useState(false)
+  const phone = contact.phone?.split(' ::: ')[0] ?? ''
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, delay: Math.min(index * 0.025, 0.4) }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.4) }}
     >
       <Link href={`/contacts/${contact.id}`} style={{ textDecoration: 'none', display: 'block' }}>
         <div
@@ -326,37 +335,33 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
           onMouseLeave={() => setHovered(false)}
           style={{
             display: 'grid',
-            gridTemplateColumns: '48px 1fr 180px 160px 24px',
+            gridTemplateColumns: '56px 1fr 200px 160px 24px',
             alignItems: 'center',
             gap: 24,
-            padding: '18px 0',
-            borderBottom: '0.5px solid rgba(240, 232, 220, 0.8)',
-            background: hovered ? 'rgba(245, 240, 232, 0.6)' : 'transparent',
-            transition: 'background 0.2s ease',
-            marginLeft: -8,
-            marginRight: -8,
-            paddingLeft: 8,
-            paddingRight: 8,
+            padding: '18px 16px',
+            borderBottom: '0.5px solid #F0E8DC',
+            background: hovered ? 'rgba(234,228,214,0.4)' : 'transparent',
+            transition: 'background 100ms',
           }}
         >
           {/* Avatar */}
           <div
             style={{
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               borderRadius: '50%',
-              background: 'var(--gold)',
+              background: '#C9A96E',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: 400,
-              color: 'var(--black)',
+              color: '#FAFAF6',
               flexShrink: 0,
             }}
           >
-            {getInitials(contact.first_name, contact.last_name)}
+            {getInitials(contact)}
           </div>
 
           {/* Name + org */}
@@ -365,7 +370,7 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
               fontFamily: 'var(--font-cormorant), var(--font-display)',
               fontSize: 20,
               fontWeight: 400,
-              color: 'var(--text-dark)',
+              color: '#1A1510',
               lineHeight: 1.2,
             }}>
               {contact.first_name} {contact.last_name}
@@ -374,7 +379,7 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
               <div style={{
                 fontFamily: 'var(--font-ui)',
                 fontSize: 11,
-                color: 'rgba(154, 138, 112, 0.8)',
+                color: '#8a7a60',
                 marginTop: 2,
               }}>
                 {contact.organization}
@@ -382,13 +387,13 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
             )}
           </div>
 
-          {/* Type */}
+          {/* Vendor type */}
           <div style={{
             fontFamily: 'var(--font-ui)',
             fontSize: 9,
-            letterSpacing: '0.3em',
+            letterSpacing: '0.25em',
             textTransform: 'uppercase',
-            color: 'var(--gold-dim)',
+            color: '#b0a080',
           }}>
             {contact.vendor_type ?? '—'}
           </div>
@@ -396,25 +401,23 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
           {/* Phone */}
           <div style={{
             fontFamily: 'var(--font-ui)',
-            fontSize: 11,
-            color: 'rgba(26, 21, 16, 0.5)',
+            fontSize: 12,
+            color: '#8a7a60',
           }}>
-            {contact.phone ?? ''}
+            {phone}
           </div>
 
           {/* Chevron */}
           <motion.span
-            animate={{ x: hovered ? 3 : 0 }}
+            animate={{ x: hovered ? 4 : 0 }}
             transition={{ duration: 0.15 }}
             style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 16,
-              color: 'var(--gold-dim)',
-              opacity: hovered ? 1 : 0.4,
-              transition: 'opacity 0.2s',
+              color: '#D0C8B8',
             }}
           >
-            ›
+            &rsaquo;
           </motion.span>
         </div>
       </Link>

@@ -3,30 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { useScramble } from 'use-scramble'
 import { supabase } from '@/lib/supabase'
-import MagneticButton from '@/components/MagneticButton'
-
-const NoiseSVG = () => (
-  <svg
-    style={{
-      position: 'absolute',
-      inset: 0,
-      width: '100%',
-      height: '100%',
-      opacity: 0.035,
-      pointerEvents: 'none',
-      zIndex: 1,
-      mixBlendMode: 'overlay',
-    }}
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <filter id="noise-login">
-      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-      <feColorMatrix type="saturate" values="0" />
-    </filter>
-    <rect width="100%" height="100%" filter="url(#noise-login)" />
-  </svg>
-)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -35,11 +13,27 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+
+  const { ref: scrambleRef } = useScramble({
+    text: 'SOLUS',
+    speed: 0.4,
+    tick: 1,
+    step: 1,
+    scramble: 10,
+    playOnMount: true,
+  })
 
   useEffect(() => {
+    document.body.classList.add('dark-bg')
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) router.push('/dashboard')
     })
+    const timer = setTimeout(() => setShowForm(true), 600)
+    return () => {
+      document.body.classList.remove('dark-bg')
+      clearTimeout(timer)
+    }
   }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -62,11 +56,10 @@ export default function LoginPage() {
 
   return (
     <div
-      data-cursor-dark
-      className="dark-bg grid-lines"
+      className="dark-bg"
       style={{
         minHeight: '100vh',
-        background: 'var(--black)',
+        background: '#080806',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -74,71 +67,70 @@ export default function LoginPage() {
         overflow: 'hidden',
       }}
     >
-      <NoiseSVG />
-
-      {/* Radial glow */}
+      {/* Ambient orb 1 */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201, 169, 110, 0.05) 0%, transparent 70%)',
+          width: 600,
+          height: 600,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)',
+          top: -100,
+          left: -200,
+          animation: 'float 8s ease-in-out infinite alternate',
           pointerEvents: 'none',
-          zIndex: 1,
+          zIndex: 0,
         }}
       />
 
-      {/* Gold wipe transition overlay */}
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: transitioning ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+      {/* Ambient orb 2 */}
+      <div
         style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'var(--gold)',
-          transformOrigin: 'left',
-          zIndex: 9000,
+          position: 'absolute',
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(201,169,110,0.05) 0%, transparent 70%)',
+          bottom: -50,
+          right: -100,
+          animation: 'float 10s ease-in-out infinite alternate-reverse',
           pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
 
       <motion.div
-        initial={{ opacity: 0, y: 32 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        animate={{ opacity: transitioning ? 0 : 1 }}
+        transition={{ duration: 0.4 }}
         style={{
           position: 'relative',
           zIndex: 10,
-          width: '100%',
-          maxWidth: 380,
-          padding: '0 32px',
+          width: 360,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
         }}
       >
-        {/* Wordmark */}
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+        {/* Logo mark */}
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <h1
+            ref={scrambleRef}
             style={{
               fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 72,
+              fontSize: 76,
               fontWeight: 300,
-              letterSpacing: '0.35em',
-              color: 'var(--gold)',
+              letterSpacing: '0.4em',
+              color: '#C9A96E',
               lineHeight: 1,
-              paddingLeft: '0.35em',
+              paddingLeft: '0.4em',
             }}
-          >
-            SOLUS
-          </h1>
+          />
           <div
             style={{
-              width: 100,
+              width: 80,
               height: '0.5px',
-              background: 'var(--gold-dim)',
-              margin: '20px auto',
-              opacity: 0.6,
+              background: '#4A3A20',
+              margin: '16px auto',
             }}
           />
           <p
@@ -146,7 +138,7 @@ export default function LoginPage() {
               fontFamily: 'var(--font-ui)',
               fontSize: 8,
               letterSpacing: '0.5em',
-              color: 'var(--gold-dim)',
+              color: '#4A3A20',
               textTransform: 'uppercase',
             }}
           >
@@ -155,60 +147,118 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          {/* Email */}
-          <div style={{ marginBottom: 20 }}>
+        <motion.form
+          onSubmit={handleSubmit}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: showForm ? 1 : 0, y: showForm ? 0 : 20 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ width: '100%' }}
+        >
+          <div style={{ marginBottom: 24 }}>
+            <label
+              style={{
+                fontFamily: 'var(--font-ui)',
+                fontSize: 8,
+                letterSpacing: '0.35em',
+                color: '#4A3A20',
+                textTransform: 'uppercase',
+                display: 'block',
+                marginBottom: 8,
+              }}
+            >
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="EMAIL"
               required
               autoComplete="email"
               style={{
                 width: '100%',
                 background: 'transparent',
                 border: 'none',
-                borderBottom: '0.5px solid #3a3020',
-                color: 'var(--gold)',
+                borderBottom: '0.5px solid #2a2018',
+                color: '#C9A96E',
                 fontFamily: 'var(--font-cormorant), var(--font-display)',
                 fontSize: 20,
-                padding: '12px 0',
-                letterSpacing: '0.05em',
-                transition: 'border-color 0.25s',
+                fontWeight: 300,
+                padding: '10px 0',
+                outline: 'none',
+                transition: 'border-color 0.3s',
               }}
-              className="dark-input"
-              onFocus={e => { e.currentTarget.style.borderBottomColor = 'var(--gold)' }}
-              onBlur={e => { e.currentTarget.style.borderBottomColor = '#3a3020' }}
+              onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+              onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2018')}
             />
           </div>
 
-          {/* Password */}
-          <div style={{ marginBottom: 40 }}>
+          <div style={{ marginBottom: 44 }}>
+            <label
+              style={{
+                fontFamily: 'var(--font-ui)',
+                fontSize: 8,
+                letterSpacing: '0.35em',
+                color: '#4A3A20',
+                textTransform: 'uppercase',
+                display: 'block',
+                marginBottom: 8,
+              }}
+            >
+              Access
+            </label>
             <input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="ACCESS"
               required
               autoComplete="current-password"
               style={{
                 width: '100%',
                 background: 'transparent',
                 border: 'none',
-                borderBottom: '0.5px solid #3a3020',
-                color: 'var(--gold)',
+                borderBottom: '0.5px solid #2a2018',
+                color: '#C9A96E',
                 fontFamily: 'var(--font-cormorant), var(--font-display)',
                 fontSize: 20,
-                padding: '12px 0',
-                letterSpacing: '0.05em',
-                transition: 'border-color 0.25s',
+                fontWeight: 300,
+                padding: '10px 0',
+                outline: 'none',
+                transition: 'border-color 0.3s',
               }}
-              className="dark-input"
-              onFocus={e => { e.currentTarget.style.borderBottomColor = 'var(--gold)' }}
-              onBlur={e => { e.currentTarget.style.borderBottomColor = '#3a3020' }}
+              onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+              onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2018')}
             />
           </div>
+
+          <button
+            type="submit"
+            disabled={loading || transitioning}
+            style={{
+              width: '100%',
+              height: 48,
+              background: '#C9A96E',
+              border: 'none',
+              fontFamily: 'var(--font-ui)',
+              fontSize: 9,
+              letterSpacing: '0.5em',
+              textTransform: 'uppercase',
+              color: '#080806',
+              transition: 'background 0.4s ease, letter-spacing 0.4s ease, transform 0.1s',
+              opacity: loading ? 0.7 : 1,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#8B7248'
+              e.currentTarget.style.letterSpacing = '0.6em'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#C9A96E'
+              e.currentTarget.style.letterSpacing = '0.5em'
+            }}
+            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.98)')}
+            onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            {loading ? 'Verifying…' : 'Enter'}
+          </button>
 
           {error && (
             <motion.p
@@ -216,42 +266,34 @@ export default function LoginPage() {
               animate={{ opacity: 1, y: 0 }}
               style={{
                 fontFamily: 'var(--font-ui)',
-                fontSize: 10,
-                letterSpacing: '0.2em',
-                color: 'rgba(192, 97, 74, 0.9)',
-                textTransform: 'uppercase',
-                marginBottom: 20,
+                fontSize: 11,
+                color: 'rgba(201,169,110,0.6)',
                 textAlign: 'center',
+                marginTop: 16,
               }}
             >
               {error}
             </motion.p>
           )}
-
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <MagneticButton
-              type="submit"
-              disabled={loading || transitioning}
-              style={{
-                width: 260,
-                height: 44,
-                background: '#8B7248',
-                color: '#FAFAF6',
-                fontFamily: 'var(--font-ui)',
-                fontSize: 9,
-                letterSpacing: '0.5em',
-                textTransform: 'uppercase',
-                border: 'none',
-                borderRadius: 2,
-                opacity: loading ? 0.7 : 1,
-                transition: 'opacity 0.2s',
-              }}
-            >
-              {loading ? 'Verifying…' : 'Enter'}
-            </MagneticButton>
-          </div>
-        </form>
+        </motion.form>
       </motion.div>
+
+      {/* Footer */}
+      <p
+        style={{
+          position: 'absolute',
+          bottom: 32,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontFamily: 'var(--font-ui)',
+          fontSize: 8,
+          letterSpacing: '0.3em',
+          color: '#2a2018',
+          textTransform: 'uppercase',
+        }}
+      >
+        SOLUS &copy; 2025
+      </p>
     </div>
   )
 }

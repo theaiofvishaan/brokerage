@@ -1,19 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
+import { useScramble } from 'use-scramble'
 import SolusNav from '@/components/SolusNav'
 import RevealText from '@/components/RevealText'
 import Marquee from '@/components/Marquee'
 
-function getGreeting() {
+function getGreetingWord() {
   const h = new Date().getHours()
-  if (h < 12) return 'Good morning,'
-  if (h < 17) return 'Good afternoon,'
-  return 'Good evening,'
+  if (h < 12) return 'morning'
+  if (h < 17) return 'afternoon'
+  return 'evening'
 }
 
 function formatDateLine() {
@@ -22,79 +21,30 @@ function formatDateLine() {
   }).toUpperCase()
 }
 
-function useCountUp(target: number, duration = 1200) {
-  const [count, setCount] = useState(0)
-  useEffect(() => {
-    if (target === 0) return
-    const start = performance.now()
-    const raf = (now: number) => {
-      const elapsed = now - start
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(raf)
-    }
-    requestAnimationFrame(raf)
-  }, [target, duration])
-  return count
-}
-
 const CARDS = [
-  {
-    num: '01',
-    title: 'Contacts',
-    desc: 'Your vendor and partner network',
-    href: '/contacts',
-  },
-  {
-    num: '02',
-    title: 'Presentations',
-    desc: 'Live builder pitch portals',
-    href: '/presentations',
-  },
-  {
-    num: '03',
-    title: 'Market Intelligence',
-    desc: 'Tampa Bay property data',
-    href: '/market',
-  },
-  {
-    num: '04',
-    title: 'Documents',
-    desc: 'Shared files and resources',
-    href: '/documents',
-  },
+  { num: '01', title: 'Contacts', desc: 'Your vendor and partner network', href: '/contacts' },
+  { num: '02', title: 'Presentations', desc: 'Live builder pitch portals', href: '/presentations' },
+  { num: '03', title: 'Documents', desc: 'Shared files and resources', href: '/documents' },
+  { num: '04', title: 'Market Intelligence', desc: 'Tampa Bay property data', href: '/market' },
 ]
 
-export default function DashboardPage() {
-  const router = useRouter()
-  const [name, setName] = useState('Vishaan')
-  const [contactCount, setContactCount] = useState(0)
-  const [loaded, setLoaded] = useState(false)
-
-  const animatedCount = useCountUp(loaded ? contactCount : 0, 1400)
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push('/'); return }
-      if (user.email) {
-        const raw = user.email.split('@')[0].split('.')[0]
-        setName(raw.charAt(0).toUpperCase() + raw.slice(1))
-      }
-    })
-
-    supabase.from('contacts').select('id', { count: 'exact', head: true }).then(({ count }) => {
-      setContactCount(count ?? 0)
-      setLoaded(true)
-    })
-  }, [router])
+export default function DashboardContent() {
+  const greetWord = getGreetingWord()
+  const { ref: scrambleRef } = useScramble({
+    text: greetWord,
+    speed: 0.4,
+    tick: 1,
+    step: 1,
+    scramble: 8,
+    playOnMount: true,
+  })
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--linen)' }}>
+    <div style={{ minHeight: '100vh', background: '#EAE4D6' }}>
       <SolusNav />
 
       {/* Hero */}
-      <section style={{ padding: '80px 64px 56px' }}>
+      <section style={{ paddingTop: 160, paddingLeft: 64, paddingRight: 64, paddingBottom: 0 }}>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -104,7 +54,7 @@ export default function DashboardPage() {
             fontSize: 9,
             letterSpacing: '0.4em',
             textTransform: 'uppercase',
-            color: 'rgba(154, 138, 112, 0.8)',
+            color: '#8a7a60',
             marginBottom: 20,
           }}
         >
@@ -112,48 +62,44 @@ export default function DashboardPage() {
         </motion.p>
 
         <RevealText
-          text={getGreeting()}
+          text="Good"
           tag="h1"
           style={{
             fontFamily: 'var(--font-cormorant), var(--font-display)',
             fontSize: 80,
             fontWeight: 300,
-            color: 'var(--text-dark)',
+            color: '#1A1510',
             lineHeight: 1,
-            marginBottom: 0,
           }}
           delay={0.15}
         />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        <h1
+          style={{
+            fontFamily: 'var(--font-cormorant), var(--font-display)',
+            fontSize: 80,
+            fontWeight: 300,
+            color: '#1A1510',
+            lineHeight: 1,
+            display: 'flex',
+            gap: '0.25em',
+          }}
         >
-          <h1
-            style={{
-              fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 80,
-              fontWeight: 300,
-              fontStyle: 'italic',
-              color: 'var(--gold)',
-              lineHeight: 1.05,
-              marginTop: 4,
-            }}
-          >
-            {name}.
-          </h1>
-        </motion.div>
+          <span ref={scrambleRef} />
+          <span>.</span>
+        </h1>
       </section>
 
       {/* Marquee strip */}
-      <Marquee />
+      <div style={{ marginTop: 64 }}>
+        <Marquee />
+      </div>
 
-      {/* Cards grid — 2×2 desktop, 1 col mobile */}
+      {/* Cards grid */}
       <section
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
-          borderTop: '0.5px solid rgba(180, 160, 120, 0.2)',
+          padding: '0 48px',
         }}
         className="dashboard-grid"
       >
@@ -164,8 +110,8 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              borderRight: i % 2 === 0 ? '0.5px solid rgba(180, 160, 120, 0.2)' : 'none',
-              borderBottom: i < 2 ? '0.5px solid rgba(180, 160, 120, 0.2)' : 'none',
+              borderRight: i % 2 === 0 ? '1px solid rgba(180,160,120,0.2)' : 'none',
+              borderBottom: i < 2 ? '1px solid rgba(180,160,120,0.2)' : 'none',
             }}
           >
             <DashboardCard
@@ -173,7 +119,6 @@ export default function DashboardPage() {
               title={card.title}
               desc={card.desc}
               href={card.href}
-              stat={card.num === '01' ? animatedCount : undefined}
             />
           </motion.div>
         ))}
@@ -183,13 +128,12 @@ export default function DashboardPage() {
 }
 
 function DashboardCard({
-  num, title, desc, href, stat,
+  num, title, desc, href,
 }: {
   num: string
   title: string
   desc: string
   href: string
-  stat?: number
 }) {
   const [hovered, setHovered] = useState(false)
 
@@ -200,47 +144,30 @@ function DashboardCard({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          padding: '40px 36px',
-          background: hovered ? 'rgba(234, 228, 214, 0.5)' : 'transparent',
-          transition: 'background 0.3s ease',
-          minHeight: 280,
-          display: 'flex',
-          flexDirection: 'column',
+          padding: '48px 40px',
+          background: 'transparent',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 32 }}>
-          <span
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: 9,
-              letterSpacing: '0.4em',
-              color: 'var(--gold-dim)',
-              textTransform: 'uppercase',
-            }}
-          >
-            {num}
-          </span>
-          <motion.span
-            animate={{ x: hovered ? 4 : 0, opacity: hovered ? 1 : 0 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: 16,
-              color: 'var(--gold)',
-            }}
-          >
-            →
-          </motion.span>
-        </div>
+        <span
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 11,
+            letterSpacing: '0.2em',
+            color: 'rgba(180,160,120,0.5)',
+          }}
+        >
+          {num}
+        </span>
 
         <h2
           style={{
             fontFamily: 'var(--font-cormorant), var(--font-display)',
             fontSize: 32,
-            fontWeight: 300,
-            color: 'var(--text-dark)',
-            letterSpacing: '0.02em',
-            marginBottom: 12,
+            fontWeight: 400,
+            color: '#1A1510',
+            marginTop: 16,
           }}
         >
           {title}
@@ -249,42 +176,27 @@ function DashboardCard({
         <p
           style={{
             fontFamily: 'var(--font-ui)',
-            fontSize: 11,
-            color: 'rgba(154, 138, 112, 0.9)',
-            lineHeight: 1.6,
-            marginBottom: 'auto',
+            fontSize: 12,
+            color: '#8a7a60',
+            marginTop: 8,
           }}
         >
           {desc}
         </p>
 
-        {stat !== undefined && (
-          <div style={{ marginTop: 32 }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-cormorant), var(--font-display)',
-                fontSize: 48,
-                fontWeight: 300,
-                color: 'var(--gold)',
-                lineHeight: 1,
-              }}
-            >
-              {stat}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-ui)',
-                fontSize: 9,
-                letterSpacing: '0.4em',
-                color: 'var(--gold-dim)',
-                textTransform: 'uppercase',
-                marginLeft: 12,
-              }}
-            >
-              contacts
-            </span>
-          </div>
-        )}
+        <motion.span
+          animate={{ x: hovered ? 0 : -12, opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 18,
+            color: '#C9A96E',
+            display: 'inline-block',
+            marginTop: 24,
+          }}
+        >
+          &rarr;
+        </motion.span>
       </div>
     </Link>
   )

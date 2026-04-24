@@ -31,8 +31,8 @@ const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-ui)',
   fontSize: 8,
   letterSpacing: '0.4em',
-  textTransform: 'uppercase' as const,
-  color: 'rgba(139, 114, 72, 0.7)',
+  textTransform: 'uppercase',
+  color: '#8B7248',
   display: 'block',
   marginBottom: 4,
 }
@@ -42,7 +42,7 @@ const inputStyle: React.CSSProperties = {
   background: 'transparent',
   border: 'none',
   borderBottom: '0.5px solid var(--hairline)',
-  color: 'var(--text-dark)',
+  color: '#1A1510',
   fontFamily: 'var(--font-ui)',
   fontSize: 14,
   padding: '10px 0',
@@ -83,30 +83,27 @@ export default function DocumentsPage() {
   }, [seeded])
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.push('/')
-    })
     fetchDocuments()
-  }, [router, fetchDocuments])
+  }, [fetchDocuments])
 
   const filtered = activeFilter === 'ALL'
     ? documents
     : documents.filter(d => d.category?.toUpperCase() === activeFilter)
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--linen)' }}>
+    <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
       <SolusNav />
 
       <main style={{ padding: '0 64px' }}>
-        <div style={{ padding: '56px 0 32px' }}>
+        <div style={{ padding: '120px 0 48px' }}>
           <RevealText
             text="Documents"
             tag="h1"
             style={{
               fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 60,
+              fontSize: 64,
               fontWeight: 300,
-              color: 'var(--text-dark)',
+              color: '#1A1510',
               letterSpacing: '0.02em',
               marginBottom: 12,
             }}
@@ -118,10 +115,9 @@ export default function DocumentsPage() {
             transition={{ delay: 0.5, duration: 0.5 }}
             style={{
               fontFamily: 'var(--font-ui)',
-              fontSize: 10,
-              letterSpacing: '0.3em',
-              color: 'var(--gold)',
-              textTransform: 'uppercase',
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              color: '#C9A96E',
             }}
           >
             {loading ? '— loading' : `— ${documents.length} document${documents.length !== 1 ? 's' : ''}`}
@@ -165,27 +161,13 @@ export default function DocumentsPage() {
                 fontFamily: 'var(--font-cormorant), var(--font-display)',
                 fontSize: 28,
                 fontWeight: 300,
-                color: 'rgba(180, 160, 120, 0.5)',
+                color: 'rgba(180,160,120,0.5)',
               }}>
                 No documents found
               </p>
             </motion.div>
           )}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          style={{
-            padding: '24px 0 64px',
-            borderTop: '0.5px solid var(--hairline)',
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-ui)', fontSize: 10, color: 'rgba(154, 138, 112, 0.6)', letterSpacing: '0.2em' }}>
-            {filtered.length} document{filtered.length !== 1 ? 's' : ''}
-          </span>
-        </motion.div>
       </main>
 
       {/* FAB */}
@@ -198,22 +180,22 @@ export default function DocumentsPage() {
         whileTap={{ scale: 0.94 }}
         style={{
           position: 'fixed',
-          bottom: 40,
-          right: 40,
+          bottom: 32,
+          right: 32,
           width: 56,
           height: 56,
           borderRadius: '50%',
-          background: 'var(--gold)',
-          color: 'var(--black)',
+          background: '#C9A96E',
+          color: '#080806',
           border: 'none',
           fontSize: 24,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(201, 169, 110, 0.25)',
+          boxShadow: '0 8px 32px rgba(201,169,110,0.25)',
           zIndex: 50,
         }}
-        data-hover
+        data-cursor="hover"
       >
         +
       </motion.button>
@@ -230,10 +212,6 @@ export default function DocumentsPage() {
 function DocumentRow({ document: doc, index }: { document: Document; index: number }) {
   const [hovered, setHovered] = useState(false)
 
-  const dateStr = new Date(doc.created_at).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  })
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -246,15 +224,13 @@ function DocumentRow({ document: doc, index }: { document: Document; index: numb
         onMouseLeave={() => setHovered(false)}
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr auto 120px 24px',
+          gridTemplateColumns: '1fr auto 24px',
           alignItems: 'center',
           gap: 24,
-          padding: '18px 8px',
-          borderBottom: '0.5px solid rgba(240, 232, 220, 0.8)',
-          background: hovered ? 'rgba(245, 240, 232, 0.6)' : 'transparent',
-          transition: 'background 0.2s ease',
-          marginLeft: -8,
-          marginRight: -8,
+          padding: '22px 16px',
+          borderBottom: '0.5px solid #F0E8DC',
+          background: hovered ? 'rgba(234,228,214,0.4)' : 'transparent',
+          transition: 'background 100ms',
         }}
       >
         <div>
@@ -262,7 +238,7 @@ function DocumentRow({ document: doc, index }: { document: Document; index: numb
             fontFamily: 'var(--font-cormorant), var(--font-display)',
             fontSize: 20,
             fontWeight: 400,
-            color: 'var(--text-dark)',
+            color: '#1A1510',
             lineHeight: 1.2,
             marginBottom: 4,
           }}>
@@ -272,7 +248,7 @@ function DocumentRow({ document: doc, index }: { document: Document; index: numb
             <div style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 11,
-              color: 'rgba(154, 138, 112, 0.8)',
+              color: '#8a7a60',
             }}>
               {doc.description}
             </div>
@@ -285,25 +261,14 @@ function DocumentRow({ document: doc, index }: { document: Document; index: numb
             fontSize: 8,
             letterSpacing: '0.35em',
             textTransform: 'uppercase',
-            color: 'var(--gold)',
-            border: '0.5px solid var(--gold)',
+            color: '#C9A96E',
+            border: '0.5px solid #C9A96E',
             padding: '4px 10px',
-            borderRadius: 2,
             whiteSpace: 'nowrap',
           }}>
             {doc.category}
           </span>
         )}
-
-        <span style={{
-          fontFamily: 'var(--font-ui)',
-          fontSize: 10,
-          color: 'rgba(154, 138, 112, 0.6)',
-          letterSpacing: '0.1em',
-          textAlign: 'right',
-        }}>
-          {dateStr}
-        </span>
 
         {doc.drive_url ? (
           <motion.a
@@ -312,9 +277,9 @@ function DocumentRow({ document: doc, index }: { document: Document; index: numb
             rel="noopener noreferrer"
             animate={{ x: hovered ? 3 : 0, opacity: hovered ? 1 : 0.5 }}
             transition={{ duration: 0.15 }}
-            style={{ fontFamily: 'var(--font-ui)', fontSize: 16, color: 'var(--gold)', textDecoration: 'none' }}
+            style={{ fontFamily: 'var(--font-ui)', fontSize: 16, color: '#C9A96E', textDecoration: 'none' }}
           >
-            →
+            &rarr;
           </motion.a>
         ) : (
           <span style={{ width: 24 }} />
@@ -325,21 +290,14 @@ function DocumentRow({ document: doc, index }: { document: Document; index: numb
 }
 
 function AddDocumentModal({
-  open,
-  onClose,
-  onSaved,
+  open, onClose, onSaved,
 }: {
-  open: boolean
-  onClose: () => void
-  onSaved: () => void
+  open: boolean; onClose: () => void; onSaved: () => void
 }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    category: 'General',
-    drive_url: '',
+    title: '', description: '', category: 'General', drive_url: '',
   })
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -347,9 +305,7 @@ function AddDocumentModal({
 
   async function handleSave() {
     if (!form.title.trim()) { setError('Title is required.'); return }
-    setSaving(true)
-    setError(null)
-
+    setSaving(true); setError(null)
     const { data: { user } } = await supabase.auth.getUser()
     const { error: err } = await supabase.from('documents').insert({
       title: form.title,
@@ -361,8 +317,7 @@ function AddDocumentModal({
     setSaving(false)
     if (err) { setError(err.message); return }
     setForm({ title: '', description: '', category: 'General', drive_url: '' })
-    onSaved()
-    onClose()
+    onSaved(); onClose()
   }
 
   return (
@@ -370,57 +325,27 @@ function AddDocumentModal({
       {open && (
         <>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            style={{
-              position: 'fixed', inset: 0,
-              background: 'rgba(8, 8, 6, 0.5)',
-              backdropFilter: 'blur(4px)',
-              zIndex: 200,
-            }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(8,8,6,0.5)', backdropFilter: 'blur(4px)', zIndex: 200 }}
           />
           <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              position: 'fixed',
-              bottom: 0, left: 0, right: 0,
-              background: 'var(--white)',
-              borderTop: '0.5px solid var(--hairline)',
-              zIndex: 201,
-              padding: '48px 64px 64px',
-              maxHeight: '80vh',
-              overflowY: 'auto',
+              position: 'fixed', bottom: 0, left: 0, right: 0,
+              background: '#FAFAF6', borderTop: '0.5px solid var(--hairline)',
+              zIndex: 201, padding: '48px 64px 64px', maxHeight: '80vh', overflowY: 'auto',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 40 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 40 }}>
               <div>
-                <h2 style={{
-                  fontFamily: 'var(--font-cormorant), var(--font-display)',
-                  fontSize: 36,
-                  fontWeight: 300,
-                  color: 'var(--text-dark)',
-                }}>
+                <h2 style={{ fontFamily: 'var(--font-cormorant), var(--font-display)', fontSize: 36, fontWeight: 300, color: '#1A1510' }}>
                   Add Document
                 </h2>
-                <div style={{ height: '0.5px', width: 60, background: 'var(--gold)', marginTop: 12 }} />
+                <div style={{ height: '0.5px', width: 60, background: '#C9A96E', marginTop: 12 }} />
               </div>
-              <button
-                onClick={onClose}
-                style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 9,
-                  letterSpacing: '0.4em',
-                  textTransform: 'uppercase',
-                  color: 'var(--gold-dim)',
-                  background: 'none',
-                  border: 'none',
-                }}
-              >
+              <button onClick={onClose} style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase', color: '#8B7248', background: 'none', border: 'none' }}>
                 Close
               </button>
             </div>
@@ -429,57 +354,42 @@ function AddDocumentModal({
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Title *</label>
                 <input name="title" value={form.title} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                   onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
               </div>
-
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Description</label>
                 <input name="description" value={form.description} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                   onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
               </div>
-
               <div>
                 <label style={labelStyle}>Category</label>
                 <select name="category" value={form.category} onChange={update}
                   style={{ ...inputStyle, background: 'transparent' }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                   onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
-
               <div>
                 <label style={labelStyle}>Google Drive URL</label>
                 <input name="drive_url" value={form.drive_url} onChange={update} type="url" style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                   onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
               </div>
             </div>
 
-            {error && (
-              <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: '#c0614a', marginTop: 16 }}>{error}</p>
-            )}
+            {error && <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'rgba(201,169,110,0.6)', marginTop: 16 }}>{error}</p>}
 
             <div style={{ marginTop: 40 }}>
-              <button
-                onClick={handleSave}
-                disabled={saving}
+              <button onClick={handleSave} disabled={saving}
                 style={{
-                  background: 'var(--gold)',
-                  color: 'var(--black)',
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 9,
-                  letterSpacing: '0.5em',
-                  textTransform: 'uppercase',
-                  border: 'none',
-                  padding: '16px 48px',
-                  opacity: saving ? 0.6 : 1,
-                  transition: 'opacity 0.2s',
-                }}
-              >
-                {saving ? 'Saving…' : 'Add Document'}
+                  background: '#C9A96E', color: '#080806', fontFamily: 'var(--font-ui)',
+                  fontSize: 9, letterSpacing: '0.5em', textTransform: 'uppercase',
+                  border: 'none', padding: '16px 48px', opacity: saving ? 0.6 : 1, transition: 'opacity 0.2s',
+                }}>
+                {saving ? 'Saving...' : 'Add Document'}
               </button>
             </div>
           </motion.div>

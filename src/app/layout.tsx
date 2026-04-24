@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 import ClientCursor from '@/components/ClientCursor'
 import ScrollProgress from '@/components/ScrollProgress'
+import ToastProvider from '@/components/ToastProvider'
 
 const cormorant = Cormorant_Garamond({
   variable: '--font-cormorant',
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body>
         <ClientCursor />
         <ScrollProgress />
+        <ToastProvider />
         {children}
       </body>
     </html>

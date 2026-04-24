@@ -18,6 +18,8 @@ export default function SolusNav() {
   const navRef = useRef<HTMLDivElement>(null)
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0, opacity: 0 })
 
+  const isDark = pathname.startsWith('/market')
+
   const updateUnderline = useCallback((el: HTMLElement | null) => {
     if (!el || !navRef.current) return
     const navRect = navRef.current.getBoundingClientRect()
@@ -44,16 +46,23 @@ export default function SolusNav() {
     router.push('/')
   }
 
+  const linkColor = isDark ? 'rgba(201,169,110,0.5)' : 'rgba(26,21,16,0.5)'
+  const activeLinkColor = isDark ? '#C9A96E' : '#1A1510'
+  const logoColor = isDark ? '#C9A96E' : '#1A1510'
+
   return (
     <header
-      data-cursor-dark
       style={{
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
+        left: 0,
+        right: 0,
         zIndex: 100,
         height: 64,
-        background: 'var(--white)',
-        borderBottom: '0.5px solid var(--hairline)',
+        background: isDark ? 'rgba(8,8,6,0.95)' : 'rgba(234,228,214,0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: isDark ? '0.5px solid rgba(201,169,110,0.1)' : '0.5px solid rgba(180,160,120,0.2)',
         display: 'flex',
         alignItems: 'center',
         padding: '0 64px',
@@ -63,10 +72,10 @@ export default function SolusNav() {
         href="/dashboard"
         style={{
           fontFamily: 'var(--font-cormorant), var(--font-display)',
-          fontSize: 18,
+          fontSize: 20,
           letterSpacing: '0.3em',
-          fontWeight: 300,
-          color: 'var(--text-dark)',
+          fontWeight: 400,
+          color: logoColor,
           textDecoration: 'none',
           flexShrink: 0,
         }}
@@ -92,9 +101,20 @@ export default function SolusNav() {
               key={item.href}
               href={item.href}
               data-active={isActive}
-              className="nav-link"
               style={{
-                color: isActive ? 'var(--text-dark)' : undefined,
+                fontFamily: 'var(--font-ui)',
+                fontSize: 9,
+                letterSpacing: '0.35em',
+                textTransform: 'uppercase',
+                color: isActive ? activeLinkColor : linkColor,
+                textDecoration: 'none',
+                transition: 'color 0.2s ease',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = activeLinkColor)}
+              onMouseLeave={e => {
+                if (!e.currentTarget.dataset.active || e.currentTarget.dataset.active !== 'true') {
+                  e.currentTarget.style.color = linkColor
+                }
               }}
             >
               {item.label}
@@ -102,13 +122,12 @@ export default function SolusNav() {
           )
         })}
 
-        {/* Sliding underline */}
         <div
           style={{
             position: 'absolute',
             bottom: -1,
-            height: 1,
-            background: 'var(--gold)',
+            height: '0.5px',
+            background: '#C9A96E',
             transition: 'all 0.35s var(--ease-expo)',
             pointerEvents: 'none',
             left: underlineStyle.left,
@@ -125,13 +144,13 @@ export default function SolusNav() {
           fontSize: 9,
           letterSpacing: '0.35em',
           textTransform: 'uppercase',
-          color: 'rgba(154, 138, 112, 0.8)',
+          color: linkColor,
           background: 'none',
           border: 'none',
-          transition: 'color 0.2s',
+          transition: 'color 0.2s ease',
         }}
-        onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-dark)')}
-        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(154, 138, 112, 0.8)')}
+        onMouseEnter={e => (e.currentTarget.style.color = activeLinkColor)}
+        onMouseLeave={e => (e.currentTarget.style.color = linkColor)}
       >
         Sign Out
       </button>

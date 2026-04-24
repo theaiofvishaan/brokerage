@@ -2,19 +2,34 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import type { NewContact } from '@/lib/supabase'
 
 const VENDOR_TYPES = [
-  'ARCHITECT', 'ATTORNEY', 'CIVIL ENGINEER', 'REAL ESTATE AGENT',
-  'SEAWALL', 'POOLS', 'SIGNS', 'DEVELOPER', 'INSURANCE',
-  'LANDSCAPE ARCHITECT', 'GENERAL CONTRACTOR', 'OTHER',
+  'Architect', 'Attorney', 'Branding', 'Builder', 'Building Materials',
+  'Civil Engineer', 'Demo / Demolition', 'Draftsman', 'Elevator',
+  'Environmental', 'Estimator', 'Fence', 'General Contractor', 'Geotech',
+  'Government', 'HVAC', 'Insurance', 'Interior Design', 'Internal',
+  'Land Use Attorney', 'Landscape Architect', 'Personal', 'Photography',
+  'Pools', 'Real Estate', 'Realtor', 'Seawall', 'Signs', 'Staging',
+  'Surveyor', 'Title', 'Video and Photo', 'Other',
 ]
 
 interface AddContactModalProps {
   open: boolean
   onClose: () => void
   onSaved: () => void
+}
+
+const labelStyle: React.CSSProperties = {
+  fontFamily: 'var(--font-ui)',
+  fontSize: 8,
+  letterSpacing: '0.35em',
+  textTransform: 'uppercase',
+  color: '#4A3A20',
+  display: 'block',
+  marginBottom: 8,
 }
 
 const inputStyle: React.CSSProperties = {
@@ -28,45 +43,6 @@ const inputStyle: React.CSSProperties = {
   padding: '10px 0',
   outline: 'none',
   transition: 'border-color 0.2s',
-}
-
-const labelStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-ui)',
-  fontSize: 8,
-  letterSpacing: '0.4em',
-  textTransform: 'uppercase' as const,
-  color: 'rgba(139, 114, 72, 0.7)',
-  display: 'block',
-  marginBottom: 4,
-}
-
-function Field({
-  label,
-  name,
-  value,
-  onChange,
-  type = 'text',
-}: {
-  label: string
-  name: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  type?: string
-}) {
-  return (
-    <div>
-      <label style={labelStyle}>{label}</label>
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        style={inputStyle}
-        onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
-        onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}
-      />
-    </div>
-  )
 }
 
 export default function AddContactModal({ open, onClose, onSaved }: AddContactModalProps) {
@@ -103,6 +79,7 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
     setSaving(false)
     if (err) { setError(err.message); return }
     setForm({ first_name: '', last_name: '', organization: '', vendor_type: '', phone: '', email: '', address: '', city: '', state: '', website: '', notes: '' })
+    toast.success('Contact added')
     onSaved()
     onClose()
   }
@@ -118,7 +95,7 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
             onClick={onClose}
             style={{
               position: 'fixed', inset: 0,
-              background: 'rgba(8, 8, 6, 0.5)',
+              background: 'rgba(8,8,6,0.5)',
               backdropFilter: 'blur(4px)',
               zIndex: 200,
             }}
@@ -131,7 +108,7 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
             style={{
               position: 'fixed',
               bottom: 0, left: 0, right: 0,
-              background: 'var(--white)',
+              background: '#FAFAF6',
               borderTop: '0.5px solid var(--hairline)',
               zIndex: 201,
               padding: '48px 64px 64px',
@@ -145,12 +122,11 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
                   fontFamily: 'var(--font-cormorant), var(--font-display)',
                   fontSize: 36,
                   fontWeight: 300,
-                  color: 'var(--text-dark)',
-                  letterSpacing: '0.02em',
+                  color: '#1A1510',
                 }}>
                   Add Contact
                 </h2>
-                <div style={{ height: '0.5px', width: 60, background: 'var(--gold)', marginTop: 12 }} />
+                <div style={{ height: '0.5px', width: 60, background: '#C9A96E', marginTop: 12 }} />
               </div>
               <button
                 onClick={onClose}
@@ -159,7 +135,7 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
                   fontSize: 9,
                   letterSpacing: '0.4em',
                   textTransform: 'uppercase',
-                  color: 'var(--gold-dim)',
+                  color: '#8B7248',
                   background: 'none',
                   border: 'none',
                 }}
@@ -169,56 +145,82 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px 48px', maxWidth: 800 }}>
-              <Field label="First Name *" name="first_name" value={form.first_name} onChange={update} />
-              <Field label="Last Name" name="last_name" value={form.last_name} onChange={update} />
-              <Field label="Organization" name="organization" value={form.organization} onChange={update} />
-
               <div>
-                <label style={labelStyle}>Type</label>
-                <select
-                  name="vendor_type"
-                  value={form.vendor_type}
-                  onChange={update}
-                  style={{
-                    ...inputStyle,
-                    background: 'transparent',
-                  }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}
-                >
+                <label style={labelStyle}>First Name *</label>
+                <input name="first_name" value={form.first_name} onChange={update} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>Last Name</label>
+                <input name="last_name" value={form.last_name} onChange={update} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>Organization</label>
+                <input name="organization" value={form.organization} onChange={update} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>Vendor Type</label>
+                <select name="vendor_type" value={form.vendor_type} onChange={update}
+                  style={{ ...inputStyle, background: 'transparent' }}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}>
                   <option value="">— Select —</option>
                   {VENDOR_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
-
-              <Field label="Phone" name="phone" value={form.phone} onChange={update} type="tel" />
-              <Field label="Email" name="email" value={form.email} onChange={update} type="email" />
-              <Field label="Address" name="address" value={form.address} onChange={update} />
-              <Field label="City" name="city" value={form.city} onChange={update} />
-              <Field label="State" name="state" value={form.state} onChange={update} />
-              <Field label="Website" name="website" value={form.website} onChange={update} type="url" />
-
+              <div>
+                <label style={labelStyle}>Phone</label>
+                <input name="phone" value={form.phone} onChange={update} type="tel" style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input name="email" value={form.email} onChange={update} type="email" style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>Address</label>
+                <input name="address" value={form.address} onChange={update} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>City</label>
+                <input name="city" value={form.city} onChange={update} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>State</label>
+                <input name="state" value={form.state} onChange={update} style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
+              <div>
+                <label style={labelStyle}>Website</label>
+                <input name="website" value={form.website} onChange={update} type="url" style={inputStyle}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+              </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Notes</label>
                 <textarea
-                  name="notes"
-                  value={form.notes}
-                  onChange={update}
-                  rows={3}
-                  style={{
-                    ...inputStyle,
-                    resize: 'none',
-                    lineHeight: 1.6,
-                    borderBottom: '0.5px solid var(--hairline)',
-                  }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}
-                />
+                  name="notes" value={form.notes} onChange={update} rows={3}
+                  style={{ ...inputStyle, resize: 'none', lineHeight: 1.6 }}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
               </div>
             </div>
 
             {error && (
-              <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: '#c0614a', marginTop: 16 }}>
+              <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'rgba(201,169,110,0.6)', marginTop: 16 }}>
                 {error}
               </p>
             )}
@@ -228,19 +230,20 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
                 onClick={handleSave}
                 disabled={saving}
                 style={{
-                  background: 'var(--gold)',
-                  color: 'var(--black)',
+                  width: '100%',
+                  background: '#C9A96E',
+                  color: '#080806',
                   fontFamily: 'var(--font-ui)',
                   fontSize: 9,
                   letterSpacing: '0.5em',
                   textTransform: 'uppercase',
                   border: 'none',
-                  padding: '16px 48px',
+                  padding: '16px 0',
                   opacity: saving ? 0.6 : 1,
                   transition: 'opacity 0.2s',
                 }}
               >
-                {saving ? 'Saving…' : 'Add Contact'}
+                {saving ? 'Saving…' : 'Save'}
               </button>
             </div>
           </motion.div>

@@ -23,7 +23,7 @@ const inputStyle: React.CSSProperties = {
   background: 'transparent',
   border: 'none',
   borderBottom: '0.5px solid var(--hairline)',
-  color: 'var(--text-dark)',
+  color: '#1A1510',
   fontFamily: 'var(--font-ui)',
   fontSize: 14,
   padding: '10px 0',
@@ -35,8 +35,8 @@ const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-ui)',
   fontSize: 8,
   letterSpacing: '0.4em',
-  textTransform: 'uppercase' as const,
-  color: 'rgba(139, 114, 72, 0.65)',
+  textTransform: 'uppercase',
+  color: '#8B7248',
   display: 'block',
   marginBottom: 6,
 }
@@ -54,12 +54,12 @@ function InfoRow({ label, value, href }: { label: string; value: string | null |
       <span style={labelStyle}>{label}</span>
       {href ? (
         <a href={href} target="_blank" rel="noopener noreferrer" style={{
-          fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--gold)', textDecoration: 'none',
+          fontFamily: 'var(--font-ui)', fontSize: 13, color: '#C9A96E', textDecoration: 'none',
         }}>
           {value}
         </a>
       ) : (
-        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text-dark)' }}>{value}</span>
+        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: '#1A1510' }}>{value}</span>
       )}
     </div>
   )
@@ -78,7 +78,7 @@ function SaveFlash({ show }: { show: boolean }) {
             fontFamily: 'var(--font-ui)',
             fontSize: 8,
             letterSpacing: '0.3em',
-            color: 'var(--gold)',
+            color: '#C9A96E',
             textTransform: 'uppercase',
             marginLeft: 12,
           }}
@@ -97,7 +97,6 @@ export default function ContactDetailContent({ id }: { id: string }) {
   const [notFound, setNotFound] = useState(false)
   const [editing, setEditing] = useState(false)
 
-  // Note fields with individual flash states
   const [convoDate, setConvoDate] = useState('')
   const [convoNotes, setConvoNotes] = useState('')
   const [meetingNotes, setMeetingNotes] = useState('')
@@ -106,14 +105,9 @@ export default function ContactDetailContent({ id }: { id: string }) {
   const [flashMeeting, setFlashMeeting] = useState(false)
   const [flashPersonal, setFlashPersonal] = useState(false)
 
-  // Edit mode fields
   const [editForm, setEditForm] = useState<Partial<Contact>>({})
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.push('/')
-    })
-
     supabase.from('contacts').select('*').eq('id', id).single().then(({ data, error }) => {
       if (error || !data) { setNotFound(true); setLoading(false); return }
       const c = data as Contact
@@ -124,7 +118,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
       setPersonalNotes(c.personal_notes ?? '')
       setLoading(false)
     })
-  }, [id, router])
+  }, [id])
 
   function showFlash(setter: (v: boolean) => void) {
     setter(true)
@@ -186,9 +180,9 @@ export default function ContactDetailContent({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+      <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
         <SolusNav />
-        <div style={{ padding: '80px 64px' }}>
+        <div style={{ padding: '120px 64px' }}>
           {[300, 200, 400, 160].map((w, i) => (
             <div key={i} className="skeleton-linen" style={{ height: i === 0 ? 60 : 12, width: w, marginBottom: 24 }} />
           ))}
@@ -199,14 +193,14 @@ export default function ContactDetailContent({ id }: { id: string }) {
 
   if (notFound || !contact) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+      <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
         <SolusNav />
-        <div style={{ padding: '120px 64px', textAlign: 'center' }}>
+        <div style={{ padding: '160px 64px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'var(--font-cormorant), var(--font-display)', fontSize: 32, fontWeight: 300, color: 'rgba(180,160,120,0.5)', marginBottom: 24 }}>
             Contact not found
           </p>
-          <Link href="/contacts" style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', color: 'var(--gold)', textDecoration: 'none', textTransform: 'uppercase' }}>
-            ← Directory
+          <Link href="/contacts" style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', color: '#C9A96E', textDecoration: 'none', textTransform: 'uppercase' }}>
+            &larr; Directory
           </Link>
         </div>
       </div>
@@ -216,7 +210,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
   const fullName = [contact.first_name, contact.last_name].filter(Boolean).join(' ')
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+    <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
       <SolusNav />
 
       <main style={{ padding: '0 64px 80px' }}>
@@ -225,7 +219,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
-          style={{ paddingTop: 40, marginBottom: 48 }}
+          style={{ paddingTop: 100, marginBottom: 48 }}
         >
           <Link
             href="/contacts"
@@ -233,49 +227,26 @@ export default function ContactDetailContent({ id }: { id: string }) {
               fontFamily: 'var(--font-ui)',
               fontSize: 9,
               letterSpacing: '0.3em',
-              color: 'var(--gold)',
+              color: '#C9A96E',
               textDecoration: 'none',
               textTransform: 'uppercase',
             }}
           >
-            ← Directory
+            &larr; Directory
           </Link>
         </motion.div>
 
         {/* Hero */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32, marginBottom: 64 }}>
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: '50%',
-              background: 'var(--gold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 20,
-              fontWeight: 400,
-              color: 'var(--black)',
-              flexShrink: 0,
-            }}
-          >
-            {getInitials(contact.first_name, contact.last_name)}
-          </motion.div>
-
           <div style={{ flex: 1 }}>
             <RevealText
               text={fullName || 'Unknown'}
               tag="h1"
               style={{
                 fontFamily: 'var(--font-cormorant), var(--font-display)',
-                fontSize: 64,
+                fontSize: 56,
                 fontWeight: 300,
-                color: 'var(--text-dark)',
-                letterSpacing: '0.01em',
+                color: '#1A1510',
                 lineHeight: 1,
                 marginBottom: 10,
               }}
@@ -285,7 +256,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: 'rgba(154, 138, 112, 0.8)', marginBottom: 12 }}
+                style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: '#8a7a60', marginBottom: 12 }}
               >
                 {contact.organization}
               </motion.p>
@@ -301,7 +272,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   fontSize: 8,
                   letterSpacing: '0.4em',
                   textTransform: 'uppercase',
-                  color: 'var(--gold-dim)',
+                  color: '#8B7248',
                   border: '0.5px solid var(--hairline)',
                   padding: '5px 14px',
                 }}
@@ -318,7 +289,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   onClick={saveEdit}
                   style={{
                     fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                    background: 'var(--gold)', color: 'var(--black)', border: 'none', padding: '10px 24px',
+                    background: '#C9A96E', color: '#080806', border: 'none', padding: '10px 24px',
                   }}
                 >
                   Save
@@ -327,7 +298,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   onClick={() => setEditing(false)}
                   style={{
                     fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                    background: 'none', color: 'var(--gold-dim)', border: '0.5px solid var(--hairline)', padding: '10px 24px',
+                    background: 'none', color: '#8B7248', border: '0.5px solid var(--hairline)', padding: '10px 24px',
                   }}
                 >
                   Cancel
@@ -338,11 +309,11 @@ export default function ContactDetailContent({ id }: { id: string }) {
                 onClick={startEdit}
                 style={{
                   fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                  background: 'none', color: 'var(--gold-dim)', border: '0.5px solid var(--hairline)', padding: '10px 24px',
+                  background: 'none', color: '#8B7248', border: '0.5px solid var(--hairline)', padding: '10px 24px',
                   transition: 'color 0.2s, border-color 0.2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--gold)'; e.currentTarget.style.borderColor = 'var(--gold)' }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--gold-dim)'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#C9A96E'; e.currentTarget.style.borderColor = '#C9A96E' }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#8B7248'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
               >
                 Edit
               </button>
@@ -360,7 +331,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
           >
             <h3 style={{
               fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
-              textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: 4,
+              textTransform: 'uppercase', color: '#8B7248', marginBottom: 4,
             }}>
               Contact Information
             </h3>
@@ -385,7 +356,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                       value={(editForm[field] as string) ?? ''}
                       onChange={e => setEditForm(f => ({ ...f, [field]: e.target.value }))}
                       style={inputStyle}
-                      onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                      onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                       onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}
                     />
                   </div>
@@ -410,11 +381,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
             transition={{ delay: 0.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             style={{ display: 'flex', flexDirection: 'column', gap: 40 }}
           >
-            {/* Last conversation */}
-            <NoteSection
-              title="Last Conversation"
-              flash={flashConvo}
-            >
+            <NoteSection title="Last Conversation" flash={flashConvo}>
               <div style={{ marginBottom: 12 }}>
                 <label style={labelStyle}>Date</label>
                 <input
@@ -423,7 +390,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   onChange={e => setConvoDate(e.target.value)}
                   onBlur={saveConvo}
                   style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                 />
               </div>
               <div>
@@ -433,54 +400,34 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   onChange={e => setConvoNotes(e.target.value)}
                   onBlur={saveConvo}
                   rows={4}
-                  placeholder="What was discussed…"
-                  style={{
-                    ...inputStyle,
-                    resize: 'none',
-                    lineHeight: 1.65,
-                    fontFamily: 'var(--font-ui)',
-                    fontSize: 13,
-                  }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  placeholder="What was discussed..."
+                  style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
+                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
                 />
               </div>
             </NoteSection>
 
-            {/* Meeting notes */}
             <NoteSection title="Meeting Notes" flash={flashMeeting}>
               <textarea
                 value={meetingNotes}
                 onChange={e => setMeetingNotes(e.target.value)}
                 onBlur={saveMeeting}
                 rows={5}
-                placeholder="Notes from meetings and site visits…"
-                style={{
-                  ...inputStyle,
-                  resize: 'none',
-                  lineHeight: 1.65,
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 13,
-                }}
-                onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                placeholder="Notes from meetings and site visits..."
+                style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
+                onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
               />
             </NoteSection>
 
-            {/* Personal notes */}
             <NoteSection title="Personal Notes" flash={flashPersonal}>
               <textarea
                 value={personalNotes}
                 onChange={e => setPersonalNotes(e.target.value)}
                 onBlur={savePersonal}
                 rows={4}
-                placeholder="Family, preferences, key dates…"
-                style={{
-                  ...inputStyle,
-                  resize: 'none',
-                  lineHeight: 1.65,
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 13,
-                }}
-                onFocus={e => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                placeholder="Family, preferences, key dates..."
+                style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
+                onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
               />
             </NoteSection>
           </motion.div>
@@ -496,7 +443,7 @@ function NoteSection({ title, children, flash }: { title: string; children: Reac
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
         <h3 style={{
           fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
-          textTransform: 'uppercase', color: 'var(--gold-dim)',
+          textTransform: 'uppercase', color: '#8B7248',
         }}>
           {title}
         </h3>

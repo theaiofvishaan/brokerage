@@ -1,15 +1,15 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function ClientCursor() {
   const dotRef = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLDivElement>(null)
   const mouse = useRef({ x: -100, y: -100 })
-  const ring = useRef({ x: -100, y: -100 })
+  const ringPos = useRef({ x: -100, y: -100 })
+  const hoveredRef = useRef(false)
+  const darkRef = useRef(false)
   const rafRef = useRef<number>(0)
-  const [hovered, setHovered] = useState(false)
-  const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -17,34 +17,41 @@ export default function ClientCursor() {
 
       const el = document.elementFromPoint(e.clientX, e.clientY)
       if (el) {
-        const dark = !!el.closest('[data-cursor-dark]')
-        setDarkMode(dark)
+        darkRef.current = document.body.classList.contains('dark-bg')
 
-        const interactive = !!(
+        hoveredRef.current = !!(
           el.closest('a') ||
           el.closest('button') ||
           el.closest('[role="button"]') ||
-          el.closest('input') ||
-          el.closest('textarea') ||
-          el.closest('[data-hover]')
+          el.closest('[data-cursor="hover"]')
         )
-        setHovered(interactive)
       }
     }
 
-    window.addEventListener('mousemove', onMove)
-
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+    window.addEventListener('mousemove', onMove, { passive: true })
 
     const animate = () => {
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${mouse.current.x - 4}px, ${mouse.current.y - 4}px)`
+      const dot = dotRef.current
+      const ring = ringRef.current
+
+      if (dot) {
+        const color = darkRef.current ? '#C9A96E' : 'rgba(26,21,16,0.6)'
+        dot.style.transform = `translate(${mouse.current.x - 4}px, ${mouse.current.y - 4}px)`
+        dot.style.background = color
+        dot.style.opacity = hoveredRef.current ? '0' : '1'
       }
-      if (ringRef.current) {
-        ring.current.x = lerp(ring.current.x, mouse.current.x, 0.22)
-        ring.current.y = lerp(ring.current.y, mouse.current.y, 0.22)
-        ringRef.current.style.transform = `translate(${ring.current.x - 12}px, ${ring.current.y - 12}px) scale(${hovered ? 1.8 : 1})`
+
+      if (ring) {
+        ringPos.current.x += (mouse.current.x - ringPos.current.x) * 0.15
+        ringPos.current.y += (mouse.current.y - ringPos.current.y) * 0.15
+        const color = darkRef.current ? '#C9A96E' : 'rgba(26,21,16,0.6)'
+        const scale = hoveredRef.current ? 2.5 : 1
+        const opacity = hoveredRef.current ? 0.4 : 0.6
+        ring.style.transform = `translate(${ringPos.current.x - 12}px, ${ringPos.current.y - 12}px) scale(${scale})`
+        ring.style.borderColor = color
+        ring.style.opacity = String(opacity)
       }
+
       rafRef.current = requestAnimationFrame(animate)
     }
 
@@ -54,9 +61,7 @@ export default function ClientCursor() {
       window.removeEventListener('mousemove', onMove)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [hovered])
-
-  const color = darkMode ? '#1A1510' : '#C9A96E'
+  }, [])
 
   return (
     <>
@@ -69,11 +74,10 @@ export default function ClientCursor() {
           width: 8,
           height: 8,
           borderRadius: '50%',
-          background: color,
+          background: '#C9A96E',
           pointerEvents: 'none',
-          zIndex: 99999,
+          zIndex: 9999,
           willChange: 'transform',
-          transition: 'background 0.3s ease',
         }}
       />
       <div
@@ -85,12 +89,11 @@ export default function ClientCursor() {
           width: 24,
           height: 24,
           borderRadius: '50%',
-          border: `0.5px solid ${color}`,
+          border: '1px solid #C9A96E',
           pointerEvents: 'none',
-          zIndex: 99998,
+          zIndex: 9999,
           willChange: 'transform',
-          transition: `border-color 0.3s ease, transform 0.15s var(--ease-expo)`,
-          opacity: 0.7,
+          opacity: 0.6,
         }}
       />
     </>

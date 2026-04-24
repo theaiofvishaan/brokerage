@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import SolusNav from '@/components/SolusNav'
 import RevealText from '@/components/RevealText'
-import MagneticButton from '@/components/MagneticButton'
 
 const RENTCAST_KEY = '1a0dd61b5fe74d0fad22d18f72d78683'
 
@@ -42,14 +41,8 @@ function fmtDate(s: string) {
 function GoldSkeleton({ width = '100%', height = 20 }: { width?: string | number; height?: number }) {
   return (
     <div
-      style={{
-        width,
-        height,
-        background: 'linear-gradient(90deg, rgba(201,169,110,0.08) 0%, rgba(201,169,110,0.18) 50%, rgba(201,169,110,0.08) 100%)',
-        backgroundSize: '200% 100%',
-        animation: 'shimmer 1.6s ease-in-out infinite',
-        borderRadius: 2,
-      }}
+      className="skeleton"
+      style={{ width, height, borderRadius: 2 }}
     />
   )
 }
@@ -63,10 +56,9 @@ export default function MarketPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.push('/')
-    })
-  }, [router])
+    document.body.classList.add('dark-bg')
+    return () => { document.body.classList.remove('dark-bg') }
+  }, [])
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -115,18 +107,18 @@ export default function MarketPage() {
   return (
     <div
       style={{ minHeight: '100vh', background: '#080806' }}
-      data-cursor-dark
+      className="dark-bg"
     >
       <SolusNav />
 
       <main style={{ padding: '0 64px', paddingBottom: 80 }}>
-        <div style={{ padding: '56px 0 48px' }}>
+        <div style={{ padding: '120px 0 48px' }}>
           <RevealText
             text="Market Intelligence"
             tag="h1"
             style={{
               fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 60,
+              fontSize: 64,
               fontWeight: 300,
               color: '#C9A96E',
               letterSpacing: '0.02em',
@@ -187,7 +179,7 @@ export default function MarketPage() {
               onBlur={e => (e.currentTarget.style.borderBottomColor = 'rgba(201,169,110,0.3)')}
             />
           </div>
-          <MagneticButton
+          <button
             type="submit"
             disabled={loading}
             style={{
@@ -205,7 +197,7 @@ export default function MarketPage() {
             }}
           >
             Search
-          </MagneticButton>
+          </button>
         </motion.form>
 
         {/* Loading skeletons */}
@@ -221,7 +213,6 @@ export default function MarketPage() {
                   <div key={i} style={{
                     border: '0.5px solid rgba(201,169,110,0.15)',
                     padding: '32px 28px',
-                    borderRadius: 2,
                   }}>
                     <GoldSkeleton height={10} width="50%" />
                     <div style={{ marginTop: 20 }}>
@@ -270,14 +261,12 @@ export default function MarketPage() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* Stat cards */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, marginBottom: 48 }}>
                 <StatCard label="Estimated Value" value={fmt$(result.price)} />
                 <StatCard label="Rent Estimate" value={`${fmt$(result.rent)}/mo`} />
                 <StatCard label="Confidence Score" value={`${confidenceScore}%`} />
               </div>
 
-              {/* Comps */}
               {comps.length > 0 && (
                 <div>
                   <p style={{
@@ -301,13 +290,6 @@ export default function MarketPage() {
           )}
         </AnimatePresence>
       </main>
-
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
     </div>
   )
 }
@@ -319,7 +301,6 @@ function StatCard({ label, value }: { label: string; value: string }) {
       style={{
         border: '0.5px solid rgba(201,169,110,0.15)',
         padding: '32px 28px',
-        borderRadius: 2,
         transition: 'border-color 0.3s',
       }}
     >

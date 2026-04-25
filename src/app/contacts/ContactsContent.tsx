@@ -76,7 +76,10 @@ export default function ContactsContent() {
 
   const fetchContacts = useCallback(async () => {
     const { data } = await supabase.from('contacts').select('*').order('first_name', { ascending: true })
-    if (data) setContacts(data as Contact[])
+    if (data) {
+      const unique = Array.from(new Map(data.map(c => [c.id, c])).values())
+      setContacts(unique as Contact[])
+    }
     setLoading(false)
   }, [])
 

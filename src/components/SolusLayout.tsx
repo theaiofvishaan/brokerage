@@ -254,7 +254,7 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
 
       {/* Main content */}
       <main
-        className="md:ml-[220px] pb-20 pt-14 md:pb-0 md:pt-0"
+        className="solus-main-content"
         style={{ minHeight: '100vh' }}
       >
         {children}

@@ -288,6 +288,20 @@ input:-webkit-autofill:focus {
 /* Back link */
 .back-link:hover { text-decoration: underline; }
 
+/* Sidebar layout: guaranteed main content offset */
+@media (min-width: 768px) {
+  .solus-main-content {
+    margin-left: 220px;
+  }
+}
+@media (max-width: 767px) {
+  .solus-main-content {
+    margin-left: 0;
+    padding-top: 56px;
+    padding-bottom: 80px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

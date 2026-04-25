@@ -4,6 +4,8 @@ import './globals.css'
 import ClientCursor from '@/components/ClientCursor'
 import ScrollProgress from '@/components/ScrollProgress'
 import ToastProvider from '@/components/ToastProvider'
+import LenisProvider from '@/components/LenisProvider'
+import PageTransition from '@/components/PageTransition'
 
 const cormorant = Cormorant_Garamond({
   variable: '--font-cormorant',
@@ -36,7 +38,11 @@ export default function RootLayout({
         <ClientCursor />
         <ScrollProgress />
         <ToastProvider />
-        {children}
+        <LenisProvider>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </LenisProvider>
       </body>
     </html>
   )

@@ -6,9 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import type { Contact } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
-import { InView } from '@/components/ui/in-view'
+import SplitText from '@/components/SplitText'
 import AddContactModal from '@/components/AddContactModal'
 import { formatPhone } from '@/lib/utils'
+import { useGsapEntrance } from '@/hooks/useGsapEntrance'
 
 const FILTER_PILLS = [
   'ALL CONTACTS',
@@ -70,6 +71,8 @@ export default function ContactsContent() {
   const [sort, setSort] = useState('name_asc')
   const [modalOpen, setModalOpen] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  useGsapEntrance(listRef, { stagger: 0.04, y: 24, trigger: true, start: 'top 90%' })
 
   const fetchContacts = useCallback(async () => {
     const { data } = await supabase.from('contacts').select('*').order('first_name', { ascending: true })
@@ -120,18 +123,21 @@ export default function ContactsContent() {
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
         {/* Header */}
         <div className="pt-16 md:pt-16 px-6 md:px-12 pb-0">
-          <h1
+          <SplitText
+            text="Directory"
+            tag="h1"
+            delay={0}
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 60,
+              fontSize: 'clamp(48px, 6vw, 72px)',
               fontWeight: 300,
               color: 'var(--text-dark)',
             }}
-            className="text-4xl md:text-6xl"
-          >
-            Directory
-          </h1>
-          <p
+          />
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 13,
@@ -141,8 +147,11 @@ export default function ContactsContent() {
             }}
           >
             Internal contact management and routing.
-          </p>
-          <p
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 11,
@@ -151,11 +160,17 @@ export default function ContactsContent() {
             }}
           >
             {loading ? '— loading' : `— ${contacts.length} contacts`}
-          </p>
+          </motion.p>
         </div>
 
         {/* Search + Sort */}
-        <div className="px-6 md:px-12 mt-8" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="px-6 md:px-12 mt-8"
+          style={{ display: 'flex', alignItems: 'center', gap: 24 }}
+        >
           <input
             type="text"
             value={search}
@@ -194,7 +209,7 @@ export default function ContactsContent() {
             <option value="created_desc">Recently Added</option>
             <option value="vendor_type">Type</option>
           </select>
-        </div>
+        </motion.div>
 
         {/* Filter pills */}
         <div
@@ -258,13 +273,11 @@ export default function ContactsContent() {
               </p>
             </div>
           ) : (
-            <InView>
-              <AnimatePresence>
-                {filtered.map((contact, i) => (
-                  <ContactRow key={contact.id} contact={contact} index={i} />
-                ))}
-              </AnimatePresence>
-            </InView>
+            <div ref={listRef}>
+              {filtered.map((contact, i) => (
+                <ContactRow key={contact.id} contact={contact} index={i} />
+              ))}
+            </div>
           )}
         </div>
 

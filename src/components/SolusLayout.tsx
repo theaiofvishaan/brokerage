@@ -11,6 +11,7 @@ import {
   BarChart3,
   LogOut,
 } from 'lucide-react'
+import MagneticButton from './MagneticButton'
 
 const NAV_ITEMS = [
   { label: 'DASHBOARD', href: '/dashboard', icon: LayoutDashboard },
@@ -110,8 +111,25 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
                 }}
                 data-hover
               >
-                <Icon size={14} strokeWidth={1.5} />
-                {item.label}
+                <MagneticButton
+                  strength={0.3}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    fontFamily: 'inherit',
+                    fontSize: 'inherit',
+                    letterSpacing: 'inherit',
+                    textTransform: 'inherit' as never,
+                    color: 'inherit',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 12,
+                  }}
+                >
+                  <Icon size={14} strokeWidth={1.5} />
+                  {item.label}
+                </MagneticButton>
               </Link>
             )
           })}

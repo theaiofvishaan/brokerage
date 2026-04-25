@@ -104,25 +104,27 @@ export default function LoginPage() {
               margin: '14px auto',
             }}
           />
-          <p
+          <motion.p
+            initial={{ opacity: 0, letterSpacing: '0.8em' }}
+            animate={{ opacity: 1, letterSpacing: '0.5em' }}
+            transition={{ duration: 1.4, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
             style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 8,
-              letterSpacing: '0.5em',
               color: 'var(--gold-muted)',
               textTransform: 'uppercase',
             }}
           >
             PRIVATE ACCESS
-          </p>
+          </motion.p>
         </div>
 
         {/* Form */}
         <motion.form
           onSubmit={handleSubmit}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           style={{ width: '100%' }}
         >
           <div style={{ marginBottom: 20 }}>
@@ -266,7 +268,10 @@ export default function LoginPage() {
       </motion.div>
 
       {/* Footer */}
-      <p
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.4 }}
+        transition={{ duration: 1, delay: 1.6 }}
         style={{
           position: 'absolute',
           bottom: 24,
@@ -276,13 +281,12 @@ export default function LoginPage() {
           fontSize: 7,
           letterSpacing: '0.3em',
           color: 'var(--gold-muted)',
-          opacity: 0.4,
           textTransform: 'uppercase',
           whiteSpace: 'nowrap',
         }}
       >
         SECURE CONNECTION ESTABLISHED
-      </p>
+      </motion.p>
     </div>
   )
 }

@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import gsap from 'gsap'
 import { supabase } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
+import SplitText from '@/components/SplitText'
 
 
 interface AVMResult {
@@ -45,6 +47,22 @@ export default function MarketContent() {
   const [result, setResult] = useState<AVMResult | null>(null)
   const [comps, setComps] = useState<Comparable[]>([])
   const [error, setError] = useState<string | null>(null)
+  const statGridRef = useRef<HTMLDivElement>(null)
+
+  const animateStatCards = useCallback(() => {
+    if (!statGridRef.current) return
+    gsap.from(statGridRef.current.children, {
+      y: 32,
+      opacity: 0,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: 'expo.out',
+    })
+  }, [])
+
+  useEffect(() => {
+    if (result && !loading) animateStatCards()
+  }, [result, loading, animateStatCards])
 
   useEffect(() => {
     document.body.classList.add('dark-bg')
@@ -94,16 +112,17 @@ export default function MarketContent() {
       <div style={{ minHeight: '100vh', background: 'var(--obsidian)' }}>
         <main className="px-6 md:px-12 pb-20">
           <div className="pt-16 md:pt-16 pb-8">
-            <h1
+            <SplitText
+              text="Market Intelligence"
+              tag="h1"
+              delay={0}
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 60,
+                fontSize: 'clamp(48px, 6vw, 60px)',
                 fontWeight: 300,
                 color: 'var(--gold)',
               }}
-            >
-              Market Intelligence
-            </h1>
+            />
             <p
               style={{
                 fontFamily: 'var(--font-ui)',
@@ -120,7 +139,7 @@ export default function MarketContent() {
           {/* Search */}
           <motion.form
             onSubmit={handleSearch}
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             style={{
@@ -244,7 +263,7 @@ export default function MarketContent() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="market-stat-grid" style={{ display: 'grid', gap: 24, marginBottom: 48 }}>
+                <div ref={statGridRef} className="market-stat-grid" style={{ display: 'grid', gap: 24, marginBottom: 48 }}>
                   <StatCard label="Estimated Value" value={fmt$(result.price)} />
                   <StatCard label="Rent Estimate" value={`${fmt$(result.rent)}/mo`} />
                   <StatCard label="Confidence Score" value={`${confidenceScore}%`} />

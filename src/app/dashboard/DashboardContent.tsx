@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import SolusLayout from '@/components/SolusLayout'
-import { TextEffect } from '@/components/ui/text-effect'
+import SplitText from '@/components/SplitText'
 import { Spotlight } from '@/components/ui/spotlight'
 import { supabase } from '@/lib/supabase'
+import { useGsapEntrance } from '@/hooks/useGsapEntrance'
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -49,6 +50,9 @@ export default function DashboardContent() {
       })
     })
   }, [])
+
+  const cardsRef = useRef<HTMLElement>(null)
+  useGsapEntrance(cardsRef, { stagger: 0.08, delay: 0.4, trigger: true })
 
   const fmt = (n: number | null) => n === null ? '—' : String(n)
 
@@ -104,19 +108,23 @@ export default function DashboardContent() {
             {formatDateLine()}
           </motion.p>
 
-          <TextEffect
-            preset="blur"
-            per="word"
-            className="dashboard-greeting"
-            as="h1"
-          >
-            {getGreeting()}
-          </TextEffect>
+          <SplitText
+            text={getGreeting()}
+            tag="h1"
+            delay={0.2}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(48px, 6vw, 72px)',
+              fontWeight: 300,
+              letterSpacing: '-0.01em',
+              color: 'var(--text-dark)',
+            }}
+          />
 
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 14,
@@ -129,7 +137,12 @@ export default function DashboardContent() {
         </section>
 
         {/* Marquee strip */}
-        <div className="mt-12 md:mt-12">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.6 }}
+          className="mt-12 md:mt-12"
+        >
           <div
             style={{
               borderTop: '0.5px solid var(--border)',
@@ -163,10 +176,11 @@ export default function DashboardContent() {
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Cards 2x2 grid */}
         <section
+          ref={cardsRef}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',

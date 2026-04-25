@@ -109,7 +109,7 @@ export default function MarketContent() {
 
   return (
     <SolusLayout activePage="market">
-      <div style={{ minHeight: '100vh', background: 'var(--obsidian)' }}>
+      <div className="page-content" style={{ minHeight: '100vh', background: 'var(--obsidian)' }}>
         <main className="px-6 md:px-12 pb-20">
           <div className="pt-16 md:pt-16 pb-8">
             <SplitText

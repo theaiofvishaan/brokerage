@@ -16,12 +16,14 @@ export default function LenisProvider({
 }) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 0.8,
-      easing: (t: number) => 1 - Math.pow(1 - t, 3),
+      duration: 0.75,
+      easing: (t: number) => 1 - Math.pow(1 - t, 4),
       orientation: 'vertical',
+      gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1.2,
-      touchMultiplier: 2,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
     })
 
     lenis.on('scroll', ScrollTrigger.update)

@@ -74,7 +74,7 @@ export default function PresentationsContent() {
 
   return (
     <SolusLayout activePage="presentations">
-      <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+      <div className="page-content" style={{ minHeight: '100vh', background: 'var(--white)' }}>
         <main className="px-6 md:px-12">
           <div className="pt-16 md:pt-16 pb-8">
             <h1

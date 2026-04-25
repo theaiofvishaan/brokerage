@@ -120,7 +120,7 @@ export default function ContactsContent() {
 
   return (
     <SolusLayout activePage="contacts">
-      <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+      <div className="page-content" style={{ minHeight: '100vh', background: 'var(--white)' }}>
         {/* Header */}
         <div className="pt-16 md:pt-16 px-6 md:px-12 pb-0">
           <SplitText

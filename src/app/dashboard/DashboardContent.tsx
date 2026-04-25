@@ -81,7 +81,7 @@ export default function DashboardContent() {
 
   return (
     <SolusLayout activePage="dashboard">
-      <div style={{ background: 'var(--linen)', minHeight: '100vh', paddingTop: '48px', paddingBottom: '80px' }}>
+      <div className="page-content" style={{ background: 'var(--linen)', minHeight: '100vh' }}>
         {/* Hero */}
         <section
           style={{ position: 'relative', overflow: 'hidden' }}

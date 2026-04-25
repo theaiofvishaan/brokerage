@@ -55,7 +55,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
@@ -313,18 +313,23 @@ input:-webkit-autofill:focus {
 @media (min-width: 768px) {
   .solus-main-content {
     margin-left: 220px;
-    padding-left: 48px;
-    padding-right: 48px;
-    padding-top: 48px;
+    padding: 0;
   }
 }
 @media (max-width: 767px) {
   .solus-main-content {
     margin-left: 0;
-    padding-top: 56px;
-    padding-bottom: 80px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding: 0;
+  }
+}
+
+.page-content {
+  padding: 56px 48px 80px;
+}
+
+@media (max-width: 767px) {
+  .page-content {
+    padding: 72px 24px 96px;
   }
 }
 

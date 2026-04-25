@@ -68,7 +68,7 @@ export default function DashboardContent() {
       href: '/presentations',
     },
     {
-      label: counts.presentations === null ? '— PRESENTATIONS' : `${fmt(counts.presentations)} PRESENTATIONS`,
+      label: counts.presentations === null ? '— PRESENTATIONS' : `${counts.presentations + 1} PRESENTATIONS`,
       title: 'Active pitch portals',
       href: '/presentations',
     },
@@ -118,7 +118,7 @@ export default function DashboardContent() {
               fontWeight: 300,
               letterSpacing: '-0.01em',
               color: 'var(--text-dark)',
-              marginBottom: 0,
+              marginBottom: '24px',
               paddingLeft: '40px',
             }}
           />
@@ -130,7 +130,7 @@ export default function DashboardContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0, duration: 0.6 }}
-          style={{ marginTop: '32px', marginBottom: 0 }}
+          style={{ marginTop: 0, marginBottom: '32px' }}
         >
           <div
             style={{
@@ -174,7 +174,7 @@ export default function DashboardContent() {
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
             gap: 0,
-            marginTop: '48px',
+            marginTop: 0,
           }}
           className="dashboard-grid"
         >
@@ -219,8 +219,8 @@ function DashboardCard({
           padding: '48px 40px',
           position: 'relative',
           overflow: 'hidden',
-          borderRight: borderRight ? '1px solid var(--border)' : 'none',
-          borderBottom: borderBottom ? '1px solid var(--border)' : 'none',
+          borderRight: borderRight ? '0.5px solid var(--border)' : 'none',
+          borderBottom: borderBottom ? '0.5px solid var(--border)' : 'none',
         }}
         className-mobile="p-6"
       >

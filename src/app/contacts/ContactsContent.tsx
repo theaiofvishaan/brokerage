@@ -323,21 +323,12 @@ export default function ContactsContent() {
 }
 
 function ContactRow({ contact }: { contact: Contact }) {
-  const [hovered, setHovered] = useState(false)
   const rawPhone = contact.phone?.split(' ::: ')[0] ?? ''
   const phone = rawPhone ? formatPhone(rawPhone) : ''
 
   return (
     <Link href={`/contacts/${contact.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-      <div
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="contact-row-grid"
-        style={{
-          background: hovered ? 'rgba(234,228,214,0.3)' : 'transparent',
-          transition: 'background 100ms',
-        }}
-      >
+      <div className="contact-row-grid">
         <div
           style={{
             width: 44,
@@ -409,13 +400,7 @@ function ContactRow({ contact }: { contact: Contact }) {
           {phone}
         </div>
 
-        <motion.span
-          animate={{ x: hovered ? 4 : 0 }}
-          transition={{ duration: 0.15 }}
-          style={{ fontSize: 16, color: 'var(--border)' }}
-        >
-          &rsaquo;
-        </motion.span>
+        <span style={{ fontSize: 16, color: 'var(--border)' }}>&rsaquo;</span>
       </div>
     </Link>
   )

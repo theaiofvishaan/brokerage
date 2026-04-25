@@ -180,14 +180,12 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="presentation-row"
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr auto auto auto',
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: 32,
-          padding: '28px 16px',
-          borderBottom: '0.5px solid var(--border-light)',
+          padding: '32px 0',
+          borderBottom: '0.5px solid var(--border)',
           background: hovered ? 'rgba(234,228,214,0.3)' : 'transparent',
           transition: 'background 100ms',
         }}
@@ -195,65 +193,53 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
         <div>
           <div style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: 400,
             color: 'var(--text-dark)',
             lineHeight: 1.2,
-            marginBottom: 6,
           }}>
             {p.title}
           </div>
           {p.description && (
-            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--text-muted)' }}>
+            <div style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text-muted)', marginTop: 6 }}>
               {p.description}
             </div>
           )}
         </div>
 
-        <span
-          style={{
-            fontFamily: 'var(--font-ui)',
-            fontSize: 8,
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            color: 'var(--gold)',
-            border: '0.5px solid var(--gold)',
-            padding: '4px 10px',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {p.status === 'In Preparation' ? 'IN PREPARATION' : (p.status ?? '—')}
-        </span>
-
-        <span style={{
-          fontFamily: 'var(--font-ui)',
-          fontSize: 10,
-          color: 'var(--text-muted)',
-          whiteSpace: 'nowrap',
-        }}>
-          {new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-        </span>
-
-        {p.external_url ? (
-          <motion.a
-            href={p.external_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            animate={{ x: hovered ? 3 : 0, opacity: hovered ? 1 : 0.5 }}
-            transition={{ duration: 0.15 }}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+          <span
             style={{
               fontFamily: 'var(--font-ui)',
-              fontSize: 16,
+              fontSize: 9,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
               color: 'var(--gold)',
-              textDecoration: 'none',
+              border: '0.5px solid var(--gold)',
+              padding: '4px 10px',
+              whiteSpace: 'nowrap',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            {'↗'}
-          </motion.a>
-        ) : (
-          <span style={{ width: 24 }} />
-        )}
+            {p.status === 'In Preparation' ? 'IN PREPARATION' : (p.status ?? '—')}
+          </span>
+
+          {p.external_url && (
+            <a
+              href={p.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: 'var(--font-ui)',
+                fontSize: 16,
+                color: 'var(--gold)',
+                textDecoration: 'none',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              ↗
+            </a>
+          )}
+        </div>
       </div>
     </motion.div>
   )

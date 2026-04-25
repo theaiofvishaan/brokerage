@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
@@ -57,6 +57,21 @@ export default function PresentationsContent() {
 
   useEffect(() => { fetchPresentations() }, [fetchPresentations])
 
+  const COASTAL_POINTE_STATIC: Presentation = {
+    id: 'coastal-pointe-static',
+    title: 'Coastal Pointe Homes',
+    description: 'Development by Coastal Pointe. Sold by SOLUS. Partnership pitch in preparation.',
+    status: 'In Preparation',
+    external_url: 'https://gamma.app/docs/A-Better-Model-yroskr97tce387p',
+    created_at: new Date().toISOString(),
+    added_by: null,
+  }
+
+  const displayPresentations = useMemo(() => {
+    const hasCoastalPointe = presentations.some(p => p.title?.includes('Coastal Pointe'))
+    return hasCoastalPointe ? presentations : [COASTAL_POINTE_STATIC, ...presentations]
+  }, [presentations]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <SolusLayout activePage="presentations">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
@@ -95,7 +110,7 @@ export default function PresentationsContent() {
                   <div className="skeleton" style={{ height: 20, width: '55%', borderRadius: 2 }} />
                 </div>
               ))
-            ) : presentations.length === 0 ? (
+            ) : displayPresentations.length === 0 ? (
               <div style={{ padding: '80px 0', textAlign: 'center' }}>
                 <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text-muted)' }}>
                   No presentations added yet.
@@ -103,7 +118,7 @@ export default function PresentationsContent() {
               </div>
             ) : (
               <AnimatePresence>
-                {presentations.map((p, i) => (
+                {displayPresentations.map((p, i) => (
                   <PresentationRow key={p.id} presentation={p} index={i} />
                 ))}
               </AnimatePresence>

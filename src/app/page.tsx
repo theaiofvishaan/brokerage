@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { useScramble } from 'use-scramble'
 import { supabase } from '@/lib/supabase'
 import { BackgroundBeams } from '@/components/ui/background-beams'
+import SplitText from '@/components/SplitText'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -14,15 +14,6 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
-
-  const { ref: scrambleRef } = useScramble({
-    text: 'SOLUS',
-    speed: 0.4,
-    tick: 1,
-    step: 1,
-    scramble: 8,
-    seed: 2,
-  })
 
   useEffect(() => {
     document.body.classList.add('dark-bg')
@@ -82,18 +73,11 @@ export default function LoginPage() {
       >
         {/* Logo block */}
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <span
-            ref={scrambleRef}
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 72,
-              fontWeight: 300,
-              letterSpacing: '0.4em',
-              color: 'var(--gold)',
-              lineHeight: 1,
-              paddingLeft: '0.4em',
-              display: 'block',
-            }}
+          <SplitText
+            text="SOLUS"
+            tag="h1"
+            delay={0.3}
+            className="solus-wordmark"
           />
           <div
             style={{

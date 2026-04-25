@@ -1,10 +1,21 @@
 'use client'
 
+import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+
+  useEffect(() => {
+    // Refresh ScrollTrigger on every route change so scroll-triggered
+    // animations recalculate correctly after the transition completes
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 350)
+    return () => clearTimeout(timer)
+  }, [pathname])
 
   return (
     <AnimatePresence mode="wait">

@@ -195,13 +195,12 @@ export default function ContactDetailContent({ id }: { id: string }) {
   return (
     <SolusLayout activePage="contacts">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
-        <main className="px-6 md:px-12 pb-20">
+        <main className="page-content">
           {/* Back */}
           <motion.div
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
-            className="pt-16 md:pt-8"
             style={{ marginBottom: 16 }}
           >
             <Link

@@ -143,7 +143,7 @@ export default function DocumentsContent() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
+              boxShadow: '0 4px 16px rgba(184,150,90,0.12)',
             }}
             data-hover
           >
@@ -180,7 +180,7 @@ function DocumentRow({ document: doc, index, formatDate }: { document: Document;
           alignItems: 'center',
           gap: 24,
           padding: '22px 16px',
-          borderBottom: '0.5px solid #F5EFE6',
+          borderBottom: '0.5px solid var(--border-light)',
           background: hovered ? 'rgba(234,228,214,0.3)' : 'transparent',
           transition: 'background 100ms',
         }}

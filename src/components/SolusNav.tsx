@@ -47,8 +47,8 @@ export default function SolusNav() {
   }
 
   const linkColor = isDark ? 'rgba(201,169,110,0.5)' : 'rgba(26,21,16,0.5)'
-  const activeLinkColor = isDark ? '#C9A96E' : '#1A1510'
-  const logoColor = isDark ? '#C9A96E' : '#1A1510'
+  const activeLinkColor = isDark ? 'var(--gold)' : '#1A1510'
+  const logoColor = isDark ? 'var(--gold)' : '#1A1510'
 
   return (
     <header
@@ -127,7 +127,7 @@ export default function SolusNav() {
             position: 'absolute',
             bottom: -1,
             height: '0.5px',
-            background: '#C9A96E',
+            background: 'var(--gold)',
             transition: 'all 0.35s var(--ease-expo)',
             pointerEvents: 'none',
             left: underlineStyle.left,

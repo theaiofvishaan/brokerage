@@ -27,7 +27,7 @@ export default function Marquee() {
             fontFamily: 'var(--font-ui)',
             fontSize: 9,
             letterSpacing: '0.5em',
-            color: '#8a7a60',
+            color: 'var(--text-muted)',
             textTransform: 'uppercase',
           }}
         >
@@ -40,7 +40,7 @@ export default function Marquee() {
             fontFamily: 'var(--font-ui)',
             fontSize: 9,
             letterSpacing: '0.5em',
-            color: '#8a7a60',
+            color: 'var(--text-muted)',
             textTransform: 'uppercase',
           }}
         >

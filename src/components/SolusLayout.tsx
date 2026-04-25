@@ -216,7 +216,7 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
               <span
                 style={{
                   fontFamily: 'var(--font-ui)',
-                  fontSize: 7,
+                  fontSize: 10,
                   letterSpacing: '0.08em',
                   color: isActive ? 'var(--gold)' : 'var(--text-muted)',
                   overflow: 'hidden',

@@ -232,7 +232,7 @@ export default function ContactsContent() {
                   alignItems: 'center',
                   gap: 20,
                   padding: '16px 0',
-                  borderBottom: '0.5px solid #F5EFE6',
+                  borderBottom: '0.5px solid var(--border-light)',
                 }}
               >
                 <div className="skeleton-linen" style={{ width: 44, height: 44, borderRadius: '50%' }} />
@@ -291,7 +291,7 @@ export default function ContactsContent() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
+              boxShadow: '0 4px 16px rgba(184,150,90,0.12)',
             }}
             data-hover
           >
@@ -332,7 +332,7 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
             alignItems: 'center',
             gap: 20,
             padding: '16px 0',
-            borderBottom: '0.5px solid #F5EFE6',
+            borderBottom: '0.5px solid var(--border-light)',
             background: hovered ? 'rgba(234,228,214,0.3)' : 'transparent',
             transition: 'background 100ms',
           }}
@@ -417,7 +417,7 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
             display: 'flex',
             alignItems: 'center',
             padding: '14px 0',
-            borderBottom: '0.5px solid #F5EFE6',
+            borderBottom: '0.5px solid var(--border-light)',
             gap: 12,
           }}
         >

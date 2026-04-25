@@ -149,7 +149,7 @@ export default function LoginPage() {
                 width: '100%',
                 background: 'transparent',
                 border: 'none',
-                borderBottom: '0.5px solid #2a2018',
+                borderBottom: '0.5px solid var(--input-bg)',
                 color: 'var(--gold)',
                 fontFamily: 'var(--font-display)',
                 fontSize: 20,
@@ -159,7 +159,7 @@ export default function LoginPage() {
                 transition: 'border-color 0.3s',
               }}
               onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
-              onBlur={(e) => (e.currentTarget.style.borderBottomColor = '#2a2018')}
+              onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--input-bg)')}
             />
           </div>
 
@@ -187,7 +187,7 @@ export default function LoginPage() {
                 width: '100%',
                 background: 'transparent',
                 border: 'none',
-                borderBottom: '0.5px solid #2a2018',
+                borderBottom: '0.5px solid var(--input-bg)',
                 color: 'var(--gold)',
                 fontFamily: 'var(--font-display)',
                 fontSize: 20,
@@ -197,7 +197,7 @@ export default function LoginPage() {
                 transition: 'border-color 0.3s',
               }}
               onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
-              onBlur={(e) => (e.currentTarget.style.borderBottomColor = '#2a2018')}
+              onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--input-bg)')}
             />
           </div>
 

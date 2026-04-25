@@ -17,12 +17,6 @@ interface Presentation {
 
 const STATUS_OPTIONS = ['In Preparation', 'Active', 'Sent', 'Closed']
 
-const SEED_ROW: Omit<Presentation, 'id' | 'created_at' | 'added_by'> = {
-  title: 'Coastal Pointe Homes',
-  description: 'Builder partnership proposal',
-  status: 'In Preparation',
-  external_url: 'https://gamma.app/docs/A-Better-Model-yroskr97tce387p',
-}
 
 const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-ui)',
@@ -63,12 +57,6 @@ export default function PresentationsContent() {
 
   useEffect(() => { fetchPresentations() }, [fetchPresentations])
 
-  const rows = loading
-    ? []
-    : presentations.length > 0
-    ? presentations
-    : [{ ...SEED_ROW, id: '__seed__', created_at: new Date().toISOString(), added_by: null }]
-
   return (
     <SolusLayout activePage="presentations">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
@@ -100,16 +88,31 @@ export default function PresentationsContent() {
           <div className="hairline" />
 
           <div>
-            <AnimatePresence>
-              {rows.map((p, i) => (
-                <PresentationRow key={p.id} presentation={p} index={i} />
-              ))}
-            </AnimatePresence>
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} style={{ border: '0.5px solid rgba(184,150,90,0.15)', padding: '28px 16px', marginBottom: 0, borderTop: i === 0 ? undefined : 'none' }}>
+                  <div className="skeleton" style={{ height: 10, width: '30%', marginBottom: 12, borderRadius: 2 }} />
+                  <div className="skeleton" style={{ height: 20, width: '55%', borderRadius: 2 }} />
+                </div>
+              ))
+            ) : presentations.length === 0 ? (
+              <div style={{ padding: '80px 0', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text-muted)' }}>
+                  No presentations added yet.
+                </p>
+              </div>
+            ) : (
+              <AnimatePresence>
+                {presentations.map((p, i) => (
+                  <PresentationRow key={p.id} presentation={p} index={i} />
+                ))}
+              </AnimatePresence>
+            )}
           </div>
         </main>
 
-        {/* FAB — desktop only */}
-        <div className="fab-wrapper hidden md:block" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+        {/* FAB */}
+        <div className="fab-wrapper block bottom-20 md:bottom-6" style={{ position: 'fixed', right: 24, zIndex: 50 }}>
           <span className="fab-tooltip">Add Presentation</span>
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
@@ -162,6 +165,7 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        className="presentation-row"
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr auto auto auto',

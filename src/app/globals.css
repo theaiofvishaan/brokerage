@@ -173,6 +173,17 @@ input:-webkit-autofill:focus {
   }
 }
 
+/* Market stat cards: 1 col mobile, 3 desktop */
+.market-stat-grid {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 767px) {
+  .market-stat-grid { grid-template-columns: 1fr; }
+  .comp-row { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .presentation-row { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .document-row { grid-template-columns: 1fr !important; gap: 12px !important; }
+}
+
 /* Hairline dividers */
 .hairline {
   height: 0.5px;

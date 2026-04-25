@@ -268,8 +268,8 @@ export default function ContactsContent() {
           )}
         </div>
 
-        {/* FAB — desktop only */}
-        <div className="fab-wrapper hidden md:block" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+        {/* FAB */}
+        <div className="fab-wrapper block bottom-20 md:bottom-6" style={{ position: 'fixed', right: 24, zIndex: 50 }}>
           <span className="fab-tooltip">Add Contact</span>
           <motion.button
             initial={{ scale: 0, opacity: 0 }}

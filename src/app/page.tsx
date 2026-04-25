@@ -230,7 +230,8 @@ export default function LoginPage() {
             {loading ? 'VERIFYING...' : 'AUTHENTICATE'}
           </button>
 
-          <p
+          <a
+            href="mailto:vishaan@solusrep.com"
             style={{
               fontFamily: 'var(--font-ui)',
               fontSize: 9,
@@ -238,11 +239,13 @@ export default function LoginPage() {
               color: 'var(--gold-muted)',
               textAlign: 'center',
               marginTop: 16,
+              display: 'block',
+              textDecoration: 'none',
             }}
             data-hover
           >
             REQUEST ACCESS
-          </p>
+          </a>
 
           {error && (
             <motion.p

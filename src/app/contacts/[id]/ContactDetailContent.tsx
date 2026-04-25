@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -78,22 +78,35 @@ export default function ContactDetailContent({ id }: { id: string }) {
   const [meetingNotes, setMeetingNotes] = useState('')
   const [personalNotes, setPersonalNotes] = useState('')
   const [editForm, setEditForm] = useState<Partial<Contact>>({})
+  const origConvoDate = useRef('')
+  const origConvoNotes = useRef('')
+  const origMeetingNotes = useRef('')
+  const origPersonalNotes = useRef('')
 
   useEffect(() => {
     supabase.from('contacts').select('*').eq('id', id).single().then(({ data, error }) => {
       if (error || !data) { setNotFound(true); setLoading(false); return }
       const c = data as Contact
       setContact(c)
-      setConvoDate(c.last_conversation_date ?? '')
-      setConvoNotes(c.last_conversation_notes ?? '')
-      setMeetingNotes(c.notes ?? '')
-      setPersonalNotes(c.personal_notes ?? '')
+      const cd = c.last_conversation_date ?? ''
+      const cn = c.last_conversation_notes ?? ''
+      const mn = c.notes ?? ''
+      const pn = c.personal_notes ?? ''
+      setConvoDate(cd); origConvoDate.current = cd
+      setConvoNotes(cn); origConvoNotes.current = cn
+      setMeetingNotes(mn); origMeetingNotes.current = mn
+      setPersonalNotes(pn); origPersonalNotes.current = pn
       setLoading(false)
     })
   }, [id])
 
   async function saveConvo() {
     if (!contact) return
+    const dateChanged = convoDate !== origConvoDate.current
+    const notesChanged = convoNotes !== origConvoNotes.current
+    if (!dateChanged && !notesChanged) return
+    origConvoDate.current = convoDate
+    origConvoNotes.current = convoNotes
     const { data } = await supabase.from('contacts')
       .update({ last_conversation_date: convoDate || null, last_conversation_notes: convoNotes || null })
       .eq('id', id).select().single()
@@ -103,6 +116,8 @@ export default function ContactDetailContent({ id }: { id: string }) {
 
   async function saveMeeting() {
     if (!contact) return
+    if (meetingNotes === origMeetingNotes.current) return
+    origMeetingNotes.current = meetingNotes
     const { data } = await supabase.from('contacts')
       .update({ notes: meetingNotes || null })
       .eq('id', id).select().single()
@@ -112,6 +127,8 @@ export default function ContactDetailContent({ id }: { id: string }) {
 
   async function savePersonal() {
     if (!contact) return
+    if (personalNotes === origPersonalNotes.current) return
+    origPersonalNotes.current = personalNotes
     const { data } = await supabase.from('contacts')
       .update({ personal_notes: personalNotes || null })
       .eq('id', id).select().single()

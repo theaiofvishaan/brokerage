@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import SolusLayout from '@/components/SolusLayout'
 import { TextEffect } from '@/components/ui/text-effect'
 import { Spotlight } from '@/components/ui/spotlight'
+import { supabase } from '@/lib/supabase'
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -28,30 +29,52 @@ function formatDateLine() {
 const MARQUEE_TEXT =
   'SOLUS · REAL ESTATE PARTNERS · PRIVATE · PRECISION · RESULTS · '
 
-const CARDS = [
-  {
-    label: '743 CONTACTS',
-    title: 'Private network directory',
-    href: '/contacts',
-  },
-  {
-    label: 'COASTAL POINTE HOMES',
-    title: 'Partnership pitch in preparation',
-    href: '/presentations',
-  },
-  {
-    label: 'PRESENTATIONS',
-    title: 'Active pitch portals',
-    href: '/presentations',
-  },
-  {
-    label: 'DOCUMENTS',
-    title: 'Shared files and resources',
-    href: '/documents',
-  },
-]
-
 export default function DashboardContent() {
+  const [counts, setCounts] = useState<{ contacts: number | null; presentations: number | null; documents: number | null }>({
+    contacts: null,
+    presentations: null,
+    documents: null,
+  })
+
+  useEffect(() => {
+    Promise.all([
+      supabase.from('contacts').select('id', { count: 'exact', head: true }),
+      supabase.from('presentations').select('id', { count: 'exact', head: true }),
+      supabase.from('documents').select('id', { count: 'exact', head: true }),
+    ]).then(([contactsRes, presentationsRes, documentsRes]) => {
+      setCounts({
+        contacts: contactsRes.count ?? 0,
+        presentations: presentationsRes.count ?? 0,
+        documents: documentsRes.count ?? 0,
+      })
+    })
+  }, [])
+
+  const fmt = (n: number | null) => n === null ? '—' : String(n)
+
+  const CARDS = [
+    {
+      label: counts.contacts === null ? '— CONTACTS' : `${fmt(counts.contacts)} CONTACTS`,
+      title: 'Private network directory',
+      href: '/contacts',
+    },
+    {
+      label: 'COASTAL POINTE HOMES',
+      title: 'Partnership pitch in preparation',
+      href: '/presentations',
+    },
+    {
+      label: counts.presentations === null ? '— PRESENTATIONS' : `${fmt(counts.presentations)} PRESENTATIONS`,
+      title: 'Active pitch portals',
+      href: '/presentations',
+    },
+    {
+      label: counts.documents === null ? '— DOCUMENTS' : `${fmt(counts.documents)} DOCUMENTS`,
+      title: 'Shared files and resources',
+      href: '/documents',
+    },
+  ]
+
   return (
     <SolusLayout activePage="dashboard">
       <div style={{ background: 'var(--linen)', minHeight: '100vh' }}>

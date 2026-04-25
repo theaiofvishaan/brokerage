@@ -201,7 +201,7 @@ export default function MarketContent() {
           <AnimatePresence>
             {loading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, marginBottom: 48 }}>
+                <div className="market-stat-grid" style={{ display: 'grid', gap: 24, marginBottom: 48 }}>
                   {[0, 1, 2].map(i => (
                     <div key={i} style={{ border: '0.5px solid rgba(184,150,90,0.15)', padding: '32px 28px' }}>
                       <GoldSkeleton height={10} width="50%" />
@@ -244,7 +244,7 @@ export default function MarketContent() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, marginBottom: 48 }}>
+                <div className="market-stat-grid" style={{ display: 'grid', gap: 24, marginBottom: 48 }}>
                   <StatCard label="Estimated Value" value={fmt$(result.price)} />
                   <StatCard label="Rent Estimate" value={`${fmt$(result.rent)}/mo`} />
                   <StatCard label="Confidence Score" value={`${confidenceScore}%`} />
@@ -321,6 +321,7 @@ function CompRow({ comp, index }: { comp: Comparable; index: number }) {
       transition={{ delay: index * 0.06 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="comp-row"
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr auto auto auto',

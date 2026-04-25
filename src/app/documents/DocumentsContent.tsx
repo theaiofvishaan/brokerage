@@ -100,28 +100,35 @@ export default function DocumentsContent() {
           <div className="hairline" />
 
           <div>
-            <AnimatePresence>
-              {!loading && filtered.map((doc, i) => (
-                <DocumentRow key={doc.id} document={doc} index={i} formatDate={formatDate} />
-              ))}
-            </AnimatePresence>
+            {loading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} style={{ border: '0.5px solid rgba(184,150,90,0.15)', padding: '22px 16px', borderTop: i === 0 ? undefined : 'none' }}>
+                  <div className="skeleton" style={{ height: 10, width: '25%', marginBottom: 10, borderRadius: 2 }} />
+                  <div className="skeleton" style={{ height: 18, width: '50%', borderRadius: 2 }} />
+                </div>
+              ))
+            ) : (
+              <>
+                <AnimatePresence>
+                  {filtered.map((doc, i) => (
+                    <DocumentRow key={doc.id} document={doc} index={i} formatDate={formatDate} />
+                  ))}
+                </AnimatePresence>
 
-            {!loading && filtered.length === 0 && (
-              <div style={{ padding: '80px 0', textAlign: 'center' }}>
-                <p style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 13,
-                  color: 'var(--text-muted)',
-                }}>
-                  {documents.length === 0 ? 'No documents added yet.' : 'No documents found'}
-                </p>
-              </div>
+                {filtered.length === 0 && (
+                  <div style={{ padding: '80px 0', textAlign: 'center' }}>
+                    <p style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text-muted)' }}>
+                      {documents.length === 0 ? 'No documents added yet.' : 'No documents found'}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>
 
-        {/* FAB — desktop only */}
-        <div className="fab-wrapper hidden md:block" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+        {/* FAB */}
+        <div className="fab-wrapper block bottom-20 md:bottom-6" style={{ position: 'fixed', right: 24, zIndex: 50 }}>
           <span className="fab-tooltip">Add Document</span>
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
@@ -174,6 +181,7 @@ function DocumentRow({ document: doc, index, formatDate }: { document: Document;
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        className="document-row"
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr auto auto auto',

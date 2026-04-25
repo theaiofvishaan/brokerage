@@ -81,11 +81,10 @@ export default function DashboardContent() {
 
   return (
     <SolusLayout activePage="dashboard">
-      <div style={{ background: 'var(--linen)', minHeight: '100vh', paddingTop: '64px', paddingBottom: '80px' }}>
+      <div style={{ background: 'var(--linen)', minHeight: '100vh', paddingTop: '48px', paddingBottom: '80px' }}>
         {/* Hero */}
         <section
           style={{ position: 'relative', overflow: 'hidden' }}
-          className="pt-20 md:pt-20"
         >
           <Spotlight
             className="-top-40 left-0 md:left-60 md:-top-20"
@@ -102,7 +101,8 @@ export default function DashboardContent() {
               letterSpacing: '0.4em',
               textTransform: 'uppercase',
               color: 'var(--text-muted)',
-              marginBottom: '48px',
+              marginBottom: '24px',
+              paddingLeft: '40px',
             }}
           >
             {formatDateLine()}
@@ -114,11 +114,12 @@ export default function DashboardContent() {
             delay={0.2}
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(48px, 6vw, 72px)',
+              fontSize: 'clamp(52px, 5.5vw, 80px)',
               fontWeight: 300,
               letterSpacing: '-0.01em',
               color: 'var(--text-dark)',
-              marginBottom: '16px',
+              marginBottom: 0,
+              paddingLeft: '40px',
             }}
           />
 
@@ -129,7 +130,7 @@ export default function DashboardContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0, duration: 0.6 }}
-          style={{ marginTop: '48px', marginBottom: 0 }}
+          style={{ marginTop: '32px', marginBottom: 0 }}
         >
           <div
             style={{
@@ -173,7 +174,7 @@ export default function DashboardContent() {
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
             gap: 0,
-            marginTop: '64px',
+            marginTop: '48px',
           }}
           className="dashboard-grid"
         >

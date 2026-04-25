@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import type { Contact } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
@@ -274,8 +274,8 @@ export default function ContactsContent() {
             </div>
           ) : (
             <div>
-              {filtered.map((contact, i) => (
-                <ContactRow key={contact.id} contact={contact} index={i} />
+              {filtered.map((contact) => (
+                <ContactRow key={contact.id} contact={contact} />
               ))}
             </div>
           )}
@@ -322,171 +322,101 @@ export default function ContactsContent() {
   )
 }
 
-function ContactRow({ contact, index }: { contact: Contact; index: number }) {
+function ContactRow({ contact }: { contact: Contact }) {
   const [hovered, setHovered] = useState(false)
   const rawPhone = contact.phone?.split(' ::: ')[0] ?? ''
   const phone = rawPhone ? formatPhone(rawPhone) : ''
 
   return (
-    <div
-      className="contact-row-animate"
-      style={{ animationDelay: `${Math.min(index * 0.03, 0.3)}s` }}
-    >
-      <Link href={`/contacts/${contact.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-        {/* Desktop row */}
+    <Link href={`/contacts/${contact.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="contact-row-grid"
+        style={{
+          background: hovered ? 'rgba(234,228,214,0.3)' : 'transparent',
+          transition: 'background 100ms',
+        }}
+      >
         <div
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          className="hidden md:grid"
           style={{
-            gridTemplateColumns: '52px 1fr 180px 160px 120px 20px',
-            alignItems: 'center',
-            gap: 20,
-            padding: '16px 0',
-            borderBottom: '0.5px solid var(--border-light)',
-            background: hovered ? 'rgba(234,228,214,0.3)' : 'transparent',
-            transition: 'background 100ms',
-          }}
-        >
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: '50%',
-              background: 'var(--gold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'var(--font-display)',
-              fontSize: 16,
-              color: 'white',
-              flexShrink: 0,
-            }}
-          >
-            {getInitials(contact)}
-          </div>
-
-          <div>
-            <div
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 19,
-                fontWeight: 400,
-                color: 'var(--text-dark)',
-                lineHeight: 1.2,
-              }}
-            >
-              {contact.first_name} {contact.last_name}
-            </div>
-            {contact.organization && (
-              <div
-                style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 11,
-                  color: 'var(--text-muted)',
-                  marginTop: 2,
-                }}
-              >
-                {contact.organization}
-              </div>
-            )}
-          </div>
-
-          <div
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: 9,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: 'var(--gold-dim)',
-            }}
-          >
-            {contact.vendor_type ?? '—'}
-          </div>
-
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--text-muted)' }}>
-            {contact.organization ?? ''}
-          </div>
-
-          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--text-muted)' }}>
-            {phone}
-          </div>
-
-          <motion.span
-            animate={{ x: hovered ? 4 : 0 }}
-            transition={{ duration: 0.15 }}
-            style={{ fontSize: 16, color: 'var(--border)' }}
-          >
-            &rsaquo;
-          </motion.span>
-        </div>
-
-        {/* Mobile row */}
-        <div
-          className="md:hidden"
-          style={{
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'var(--gold)',
             display: 'flex',
             alignItems: 'center',
-            padding: '14px 0',
-            borderBottom: '0.5px solid var(--border-light)',
-            gap: 12,
+            justifyContent: 'center',
+            fontFamily: 'var(--font-display)',
+            fontSize: 16,
+            color: 'white',
+            flexShrink: 0,
           }}
         >
+          {getInitials(contact)}
+        </div>
+
+        <div>
           <div
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              background: 'var(--gold)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               fontFamily: 'var(--font-display)',
-              fontSize: 14,
-              color: 'white',
-              flexShrink: 0,
+              fontSize: 19,
+              fontWeight: 400,
+              color: 'var(--text-dark)',
+              lineHeight: 1.2,
             }}
           >
-            {getInitials(contact)}
+            {contact.first_name} {contact.last_name}
           </div>
-
-          <div style={{ flex: 1 }}>
+          {contact.organization && (
             <div
               style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 18,
-                color: 'var(--text-dark)',
+                fontFamily: 'var(--font-ui)',
+                fontSize: 11,
+                color: 'var(--text-muted)',
+                marginTop: 2,
               }}
             >
-              {contact.first_name} {contact.last_name}
+              {contact.organization}
             </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 2 }}>
-              <span
-                style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 9,
-                  color: 'var(--gold)',
-                }}
-              >
-                {contact.vendor_type ?? ''}
-              </span>
-              {phone && (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-ui)',
-                    fontSize: 11,
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  {phone}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <span style={{ fontSize: 16, color: 'var(--border)' }}>&rsaquo;</span>
+          )}
         </div>
-      </Link>
-    </div>
+
+        <div
+          className="contact-row-col-optional"
+          style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: 9,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: 'var(--gold-dim)',
+          }}
+        >
+          {contact.vendor_type ?? '—'}
+        </div>
+
+        <div
+          className="contact-row-col-optional"
+          style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--text-muted)' }}
+        >
+          {contact.organization ?? ''}
+        </div>
+
+        <div
+          className="contact-row-col-optional"
+          style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'var(--text-muted)' }}
+        >
+          {phone}
+        </div>
+
+        <motion.span
+          animate={{ x: hovered ? 4 : 0 }}
+          transition={{ duration: 0.15 }}
+          style={{ fontSize: 16, color: 'var(--border)' }}
+        >
+          &rsaquo;
+        </motion.span>
+      </div>
+    </Link>
   )
 }

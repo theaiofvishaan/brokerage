@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import { Cormorant_Garamond, Manrope } from 'next/font/google'
 import './globals.css'
 import ClientCursor from '@/components/ClientCursor'
 import ScrollProgress from '@/components/ScrollProgress'
@@ -13,16 +13,16 @@ const cormorant = Cormorant_Garamond({
   display: 'swap',
 })
 
-const dmSans = DM_Sans({
-  variable: '--font-dm-sans',
+const manrope = Manrope({
+  variable: '--font-manrope',
   subsets: ['latin'],
   weight: ['300', '400', '500'],
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'SOLUS — Real Estate Partners',
-  description: 'Private platform. SOLUS Real Estate Partners, Tampa Bay.',
+  title: 'SOLUS — Private Office',
+  description: 'Private platform. SOLUS Real Estate Partners.',
 }
 
 export default function RootLayout({
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>
       <body>
         <ClientCursor />
         <ScrollProgress />

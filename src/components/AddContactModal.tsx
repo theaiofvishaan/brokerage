@@ -10,9 +10,9 @@ const VENDOR_TYPES = [
   'Architect', 'Attorney', 'Branding', 'Builder', 'Building Materials',
   'Civil Engineer', 'Demo / Demolition', 'Draftsman', 'Elevator',
   'Environmental', 'Estimator', 'Fence', 'General Contractor', 'Geotech',
-  'Government', 'HVAC', 'Insurance', 'Interior Design', 'Internal',
+  'Government', 'Home Inspector', 'HVAC', 'Insurance', 'Interior Design', 'Internal',
   'Land Use Attorney', 'Landscape Architect', 'Personal', 'Photography',
-  'Pools', 'Real Estate', 'Realtor', 'Seawall', 'Signs', 'Staging',
+  'Pools', 'Real Estate', 'Realtor', 'Research', 'Seawall', 'Signs', 'Staging',
   'Surveyor', 'Title', 'Video and Photo', 'Other',
 ]
 
@@ -27,7 +27,7 @@ const labelStyle: React.CSSProperties = {
   fontSize: 8,
   letterSpacing: '0.35em',
   textTransform: 'uppercase',
-  color: '#4A3A20',
+  color: 'var(--gold-muted)',
   display: 'block',
   marginBottom: 8,
 }
@@ -36,7 +36,7 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   background: 'transparent',
   border: 'none',
-  borderBottom: '0.5px solid var(--hairline)',
+  borderBottom: '0.5px solid var(--border)',
   color: 'var(--text-dark)',
   fontFamily: 'var(--font-ui)',
   fontSize: 14,
@@ -108,8 +108,8 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
             style={{
               position: 'fixed',
               bottom: 0, left: 0, right: 0,
-              background: '#FAFAF6',
-              borderTop: '0.5px solid var(--hairline)',
+              background: 'var(--white)',
+              borderTop: '0.5px solid var(--border)',
               zIndex: 201,
               padding: '48px 64px 64px',
               maxHeight: '90vh',
@@ -119,23 +119,24 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 40 }}>
               <div>
                 <h2 style={{
-                  fontFamily: 'var(--font-cormorant), var(--font-display)',
+                  fontFamily: 'var(--font-display)',
                   fontSize: 36,
                   fontWeight: 300,
-                  color: '#1A1510',
+                  color: 'var(--text-dark)',
                 }}>
                   Add Contact
                 </h2>
-                <div style={{ height: '0.5px', width: 60, background: '#C9A96E', marginTop: 12 }} />
+                <div style={{ height: '0.5px', width: 60, background: 'var(--gold)', marginTop: 12 }} />
               </div>
               <button
                 onClick={onClose}
+                data-hover
                 style={{
                   fontFamily: 'var(--font-ui)',
                   fontSize: 9,
                   letterSpacing: '0.4em',
                   textTransform: 'uppercase',
-                  color: '#8B7248',
+                  color: 'var(--gold-dim)',
                   background: 'none',
                   border: 'none',
                 }}
@@ -148,27 +149,27 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
               <div>
                 <label style={labelStyle}>First Name *</label>
                 <input name="first_name" value={form.first_name} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>Last Name</label>
                 <input name="last_name" value={form.last_name} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>Organization</label>
                 <input name="organization" value={form.organization} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>Vendor Type</label>
                 <select name="vendor_type" value={form.vendor_type} onChange={update}
                   style={{ ...inputStyle, background: 'transparent' }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}>
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')}>
                   <option value="">— Select —</option>
                   {VENDOR_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -176,51 +177,51 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
               <div>
                 <label style={labelStyle}>Phone</label>
                 <input name="phone" value={form.phone} onChange={update} type="tel" style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>Email</label>
                 <input name="email" value={form.email} onChange={update} type="email" style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>Address</label>
                 <input name="address" value={form.address} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>City</label>
                 <input name="city" value={form.city} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>State</label>
                 <input name="state" value={form.state} onChange={update} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>Website</label>
                 <input name="website" value={form.website} onChange={update} type="url" style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Notes</label>
                 <textarea
                   name="notes" value={form.notes} onChange={update} rows={3}
                   style={{ ...inputStyle, resize: 'none', lineHeight: 1.6 }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')} />
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')} />
               </div>
             </div>
 
             {error && (
-              <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'rgba(201,169,110,0.6)', marginTop: 16 }}>
+              <p style={{ fontFamily: 'var(--font-ui)', fontSize: 11, color: 'rgba(184,150,90,0.5)', marginTop: 16 }}>
                 {error}
               </p>
             )}
@@ -229,10 +230,11 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
               <button
                 onClick={handleSave}
                 disabled={saving}
+                data-hover
                 style={{
                   width: '100%',
-                  background: '#C9A96E',
-                  color: '#080806',
+                  background: 'var(--gold)',
+                  color: 'var(--obsidian)',
                   fontFamily: 'var(--font-ui)',
                   fontSize: 9,
                   letterSpacing: '0.5em',
@@ -243,7 +245,7 @@ export default function AddContactModal({ open, onClose, onSaved }: AddContactMo
                   transition: 'opacity 0.2s',
                 }}
               >
-                {saving ? 'Saving…' : 'Save'}
+                {saving ? 'Saving...' : 'SAVE'}
               </button>
             </div>
           </motion.div>

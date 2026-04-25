@@ -3,137 +3,194 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { useScramble } from 'use-scramble'
-import SolusNav from '@/components/SolusNav'
-import RevealText from '@/components/RevealText'
-import Marquee from '@/components/Marquee'
+import SolusLayout from '@/components/SolusLayout'
+import { TextEffect } from '@/components/ui/text-effect'
+import { Spotlight } from '@/components/ui/spotlight'
 
-function getGreetingWord() {
+function getGreeting() {
   const h = new Date().getHours()
-  if (h < 12) return 'morning'
-  if (h < 17) return 'afternoon'
-  return 'evening'
+  if (h < 12) return 'Good morning.'
+  if (h < 17) return 'Good afternoon.'
+  return 'Good evening.'
 }
 
 function formatDateLine() {
-  return new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-  }).toUpperCase()
+  return new Date()
+    .toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    })
+    .toUpperCase()
 }
 
+const MARQUEE_TEXT =
+  'SOLUS · REAL ESTATE PARTNERS · PRIVATE · PRECISION · RESULTS · '
+
 const CARDS = [
-  { num: '01', title: 'Contacts', desc: 'Your vendor and partner network', href: '/contacts' },
-  { num: '02', title: 'Presentations', desc: 'Live builder pitch portals', href: '/presentations' },
-  { num: '03', title: 'Documents', desc: 'Shared files and resources', href: '/documents' },
-  { num: '04', title: 'Market Intelligence', desc: 'Tampa Bay property data', href: '/market' },
+  {
+    label: '743 CONTACTS',
+    title: 'Private network directory',
+    href: '/contacts',
+  },
+  {
+    label: 'COASTAL POINTE HOMES',
+    title: 'Partnership pitch in preparation',
+    href: '/presentations',
+  },
+  {
+    label: 'PRESENTATIONS',
+    title: 'Active pitch portals',
+    href: '/presentations',
+  },
+  {
+    label: 'DOCUMENTS',
+    title: 'Shared files and resources',
+    href: '/documents',
+  },
 ]
 
 export default function DashboardContent() {
-  const greetWord = getGreetingWord()
-  const { ref: scrambleRef } = useScramble({
-    text: greetWord,
-    speed: 0.4,
-    tick: 1,
-    step: 1,
-    scramble: 8,
-    playOnMount: true,
-  })
-
   return (
-    <div style={{ minHeight: '100vh', background: '#EAE4D6' }}>
-      <SolusNav />
-
-      {/* Hero */}
-      <section style={{ paddingTop: 160, paddingLeft: 64, paddingRight: 64, paddingBottom: 0 }}>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          style={{
-            fontFamily: 'var(--font-ui)',
-            fontSize: 9,
-            letterSpacing: '0.4em',
-            textTransform: 'uppercase',
-            color: '#8a7a60',
-            marginBottom: 20,
-          }}
+    <SolusLayout activePage="dashboard">
+      <div style={{ background: 'var(--linen)', minHeight: '100vh' }}>
+        {/* Hero */}
+        <section
+          style={{ position: 'relative', overflow: 'hidden' }}
+          className="pt-20 md:pt-20 px-6 md:px-16"
         >
-          {formatDateLine()}
-        </motion.p>
+          <Spotlight
+            className="-top-40 left-0 md:left-60 md:-top-20"
+            fill="rgba(184,150,90,0.08)"
+          />
 
-        <RevealText
-          text="Good"
-          tag="h1"
-          style={{
-            fontFamily: 'var(--font-cormorant), var(--font-display)',
-            fontSize: 80,
-            fontWeight: 300,
-            color: '#1A1510',
-            lineHeight: 1,
-          }}
-          delay={0.15}
-        />
-        <h1
-          style={{
-            fontFamily: 'var(--font-cormorant), var(--font-display)',
-            fontSize: 80,
-            fontWeight: 300,
-            color: '#1A1510',
-            lineHeight: 1,
-            display: 'flex',
-            gap: '0.25em',
-          }}
-        >
-          <span ref={scrambleRef} />
-          <span>.</span>
-        </h1>
-      </section>
-
-      {/* Marquee strip */}
-      <div style={{ marginTop: 64 }}>
-        <Marquee />
-      </div>
-
-      {/* Cards grid */}
-      <section
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          padding: '0 48px',
-        }}
-        className="dashboard-grid"
-      >
-        {CARDS.map((card, i) => (
-          <motion.div
-            key={card.num}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
             style={{
-              borderRight: i % 2 === 0 ? '1px solid rgba(180,160,120,0.2)' : 'none',
-              borderBottom: i < 2 ? '1px solid rgba(180,160,120,0.2)' : 'none',
+              fontFamily: 'var(--font-ui)',
+              fontSize: 9,
+              letterSpacing: '0.4em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              marginBottom: 20,
             }}
           >
+            {formatDateLine()}
+          </motion.p>
+
+          <TextEffect
+            preset="blur"
+            per="word"
+            className="dashboard-greeting"
+            as="h1"
+          >
+            {getGreeting()}
+          </TextEffect>
+          <style>{`
+            .dashboard-greeting {
+              font-family: var(--font-display);
+              font-size: 72px;
+              font-weight: 300;
+              color: var(--text-dark);
+              line-height: 1;
+            }
+            @media (max-width: 767px) {
+              .dashboard-greeting { font-size: 40px; }
+            }
+          `}</style>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            style={{
+              fontFamily: 'var(--font-ui)',
+              fontSize: 14,
+              color: 'var(--text-muted)',
+              marginTop: 12,
+            }}
+          >
+            Your executive summary is ready.
+          </motion.p>
+        </section>
+
+        {/* Marquee strip */}
+        <div className="mt-12 md:mt-12">
+          <div
+            style={{
+              borderTop: '0.5px solid var(--border)',
+              borderBottom: '0.5px solid var(--border)',
+              overflow: 'hidden',
+              padding: '12px 0',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                whiteSpace: 'nowrap',
+                '--marquee-speed': '30s',
+              } as React.CSSProperties}
+            >
+              {[0, 1].map((i) => (
+                <span
+                  key={i}
+                  className="marquee-track"
+                  aria-hidden={i === 1}
+                  style={{
+                    fontFamily: 'var(--font-ui)',
+                    fontSize: 8,
+                    letterSpacing: '0.5em',
+                    color: 'var(--text-muted)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {MARQUEE_TEXT.repeat(4)}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Cards 2x2 grid */}
+        <section
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 0,
+          }}
+          className="dashboard-grid"
+        >
+          {CARDS.map((card, i) => (
             <DashboardCard
-              num={card.num}
+              key={i}
+              label={card.label}
               title={card.title}
-              desc={card.desc}
               href={card.href}
+              borderRight={i % 2 === 0}
+              borderBottom={i < 2}
             />
-          </motion.div>
-        ))}
-      </section>
-    </div>
+          ))}
+        </section>
+      </div>
+    </SolusLayout>
   )
 }
 
 function DashboardCard({
-  num, title, desc, href,
+  label,
+  title,
+  href,
+  borderRight,
+  borderBottom,
 }: {
-  num: string
+  label: string
   title: string
-  desc: string
   href: string
+  borderRight: boolean
+  borderBottom: boolean
 }) {
   const [hovered, setHovered] = useState(false)
 
@@ -144,55 +201,45 @@ function DashboardCard({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          padding: '48px 40px',
-          background: 'transparent',
+          padding: '40px',
           position: 'relative',
           overflow: 'hidden',
+          borderRight: borderRight ? '1px solid var(--border)' : 'none',
+          borderBottom: borderBottom ? '1px solid var(--border)' : 'none',
         }}
+        className-mobile="p-6"
       >
         <span
           style={{
             fontFamily: 'var(--font-ui)',
             fontSize: 11,
             letterSpacing: '0.2em',
-            color: 'rgba(180,160,120,0.5)',
+            color: 'var(--gold)',
           }}
         >
-          {num}
+          {label}
         </span>
 
         <h2
           style={{
-            fontFamily: 'var(--font-cormorant), var(--font-display)',
-            fontSize: 32,
+            fontFamily: 'var(--font-display)',
+            fontSize: 24,
             fontWeight: 400,
-            color: '#1A1510',
-            marginTop: 16,
+            color: 'var(--text-dark)',
+            marginTop: 12,
           }}
         >
           {title}
         </h2>
 
-        <p
-          style={{
-            fontFamily: 'var(--font-ui)',
-            fontSize: 12,
-            color: '#8a7a60',
-            marginTop: 8,
-          }}
-        >
-          {desc}
-        </p>
-
         <motion.span
           animate={{ x: hovered ? 0 : -12, opacity: hovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
           style={{
-            fontFamily: 'var(--font-ui)',
             fontSize: 18,
-            color: '#C9A96E',
+            color: 'var(--gold)',
             display: 'inline-block',
-            marginTop: 24,
+            marginTop: 20,
           }}
         >
           &rarr;

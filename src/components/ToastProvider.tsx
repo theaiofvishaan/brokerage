@@ -8,19 +8,19 @@ export default function ToastProvider() {
       position="bottom-center"
       toastOptions={{
         style: {
-          background: '#080806',
-          color: '#C9A96E',
+          background: 'var(--card)',
+          color: 'var(--gold)',
           fontFamily: 'var(--font-ui)',
           fontSize: 12,
           letterSpacing: '0.1em',
-          border: '0.5px solid rgba(201,169,110,0.2)',
+          border: '0.5px solid var(--border)',
           borderRadius: 2,
           padding: '12px 20px',
         },
         success: {
           iconTheme: {
-            primary: '#C9A96E',
-            secondary: '#080806',
+            primary: '#B8965A',
+            secondary: '#111009',
           },
         },
       }}

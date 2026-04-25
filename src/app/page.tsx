@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useScramble } from 'use-scramble'
 import { supabase } from '@/lib/supabase'
+import { BackgroundBeams } from '@/components/ui/background-beams'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -13,15 +14,14 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [transitioning, setTransitioning] = useState(false)
-  const [showForm, setShowForm] = useState(false)
 
   const { ref: scrambleRef } = useScramble({
     text: 'SOLUS',
     speed: 0.4,
     tick: 1,
     step: 1,
-    scramble: 10,
-    playOnMount: true,
+    scramble: 8,
+    seed: 2,
   })
 
   useEffect(() => {
@@ -29,11 +29,7 @@ export default function LoginPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) router.push('/dashboard')
     })
-    const timer = setTimeout(() => setShowForm(true), 600)
-    return () => {
-      document.body.classList.remove('dark-bg')
-      clearTimeout(timer)
-    }
+    return () => { document.body.classList.remove('dark-bg') }
   }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -42,7 +38,10 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
 
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
     if (authError) {
       setError('Invalid credentials.')
@@ -56,10 +55,9 @@ export default function LoginPage() {
 
   return (
     <div
-      className="dark-bg"
       style={{
         minHeight: '100vh',
-        background: '#080806',
+        background: 'var(--obsidian)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -67,37 +65,7 @@ export default function LoginPage() {
         overflow: 'hidden',
       }}
     >
-      {/* Ambient orb 1 */}
-      <div
-        style={{
-          position: 'absolute',
-          width: 600,
-          height: 600,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)',
-          top: -100,
-          left: -200,
-          animation: 'float 8s ease-in-out infinite alternate',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-
-      {/* Ambient orb 2 */}
-      <div
-        style={{
-          position: 'absolute',
-          width: 400,
-          height: 400,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(201,169,110,0.05) 0%, transparent 70%)',
-          bottom: -50,
-          right: -100,
-          animation: 'float 10s ease-in-out infinite alternate-reverse',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+      <BackgroundBeams className="absolute inset-0 z-0" />
 
       <motion.div
         animate={{ opacity: transitioning ? 0 : 1 }}
@@ -106,31 +74,34 @@ export default function LoginPage() {
           position: 'relative',
           zIndex: 10,
           width: 360,
+          maxWidth: 'calc(100% - 80px)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
         }}
       >
-        {/* Logo mark */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <h1
+        {/* Logo block */}
+        <div style={{ textAlign: 'center', marginBottom: 52 }}>
+          <span
             ref={scrambleRef}
             style={{
-              fontFamily: 'var(--font-cormorant), var(--font-display)',
-              fontSize: 76,
+              fontFamily: 'var(--font-display)',
+              fontSize: 72,
               fontWeight: 300,
               letterSpacing: '0.4em',
-              color: '#C9A96E',
+              color: 'var(--gold)',
               lineHeight: 1,
               paddingLeft: '0.4em',
+              display: 'block',
             }}
           />
           <div
             style={{
-              width: 80,
+              width: 60,
               height: '0.5px',
-              background: '#4A3A20',
-              margin: '16px auto',
+              background: 'var(--gold-muted)',
+              opacity: 0.6,
+              margin: '14px auto',
             }}
           />
           <p
@@ -138,11 +109,11 @@ export default function LoginPage() {
               fontFamily: 'var(--font-ui)',
               fontSize: 8,
               letterSpacing: '0.5em',
-              color: '#4A3A20',
+              color: 'var(--gold-muted)',
               textTransform: 'uppercase',
             }}
           >
-            Real Estate Partners
+            PRIVATE ACCESS
           </p>
         </div>
 
@@ -150,28 +121,28 @@ export default function LoginPage() {
         <motion.form
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: showForm ? 1 : 0, y: showForm ? 0 : 20 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           style={{ width: '100%' }}
         >
-          <div style={{ marginBottom: 24 }}>
+          <div style={{ marginBottom: 20 }}>
             <label
               style={{
                 fontFamily: 'var(--font-ui)',
                 fontSize: 8,
                 letterSpacing: '0.35em',
-                color: '#4A3A20',
+                color: 'var(--gold-muted)',
                 textTransform: 'uppercase',
                 display: 'block',
-                marginBottom: 8,
+                marginBottom: 6,
               }}
             >
-              Email
+              ID
             </label>
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
               style={{
@@ -179,37 +150,37 @@ export default function LoginPage() {
                 background: 'transparent',
                 border: 'none',
                 borderBottom: '0.5px solid #2a2018',
-                color: '#C9A96E',
-                fontFamily: 'var(--font-cormorant), var(--font-display)',
+                color: 'var(--gold)',
+                fontFamily: 'var(--font-display)',
                 fontSize: 20,
                 fontWeight: 300,
                 padding: '10px 0',
                 outline: 'none',
                 transition: 'border-color 0.3s',
               }}
-              onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-              onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2018')}
+              onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+              onBlur={(e) => (e.currentTarget.style.borderBottomColor = '#2a2018')}
             />
           </div>
 
-          <div style={{ marginBottom: 44 }}>
+          <div style={{ marginBottom: 36 }}>
             <label
               style={{
                 fontFamily: 'var(--font-ui)',
                 fontSize: 8,
                 letterSpacing: '0.35em',
-                color: '#4A3A20',
+                color: 'var(--gold-muted)',
                 textTransform: 'uppercase',
                 display: 'block',
-                marginBottom: 8,
+                marginBottom: 6,
               }}
             >
-              Access
+              PASSPHRASE
             </label>
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
               style={{
@@ -217,16 +188,16 @@ export default function LoginPage() {
                 background: 'transparent',
                 border: 'none',
                 borderBottom: '0.5px solid #2a2018',
-                color: '#C9A96E',
-                fontFamily: 'var(--font-cormorant), var(--font-display)',
+                color: 'var(--gold)',
+                fontFamily: 'var(--font-display)',
                 fontSize: 20,
                 fontWeight: 300,
                 padding: '10px 0',
                 outline: 'none',
                 transition: 'border-color 0.3s',
               }}
-              onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-              onBlur={e => (e.currentTarget.style.borderBottomColor = '#2a2018')}
+              onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+              onBlur={(e) => (e.currentTarget.style.borderBottomColor = '#2a2018')}
             />
           </div>
 
@@ -236,29 +207,42 @@ export default function LoginPage() {
             style={{
               width: '100%',
               height: 48,
-              background: '#C9A96E',
+              background: 'var(--gold)',
               border: 'none',
               fontFamily: 'var(--font-ui)',
               fontSize: 9,
               letterSpacing: '0.5em',
               textTransform: 'uppercase',
-              color: '#080806',
-              transition: 'background 0.4s ease, letter-spacing 0.4s ease, transform 0.1s',
+              color: 'var(--obsidian)',
+              transition: 'opacity 0.3s, letter-spacing 0.3s',
               opacity: loading ? 0.7 : 1,
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = '#8B7248'
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '0.85'
               e.currentTarget.style.letterSpacing = '0.6em'
             }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = '#C9A96E'
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = loading ? '0.7' : '1'
               e.currentTarget.style.letterSpacing = '0.5em'
             }}
-            onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.98)')}
-            onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+            data-hover
           >
-            {loading ? 'Verifying…' : 'Enter'}
+            {loading ? 'VERIFYING...' : 'AUTHENTICATE'}
           </button>
+
+          <p
+            style={{
+              fontFamily: 'var(--font-ui)',
+              fontSize: 9,
+              letterSpacing: '0.3em',
+              color: 'var(--gold-muted)',
+              textAlign: 'center',
+              marginTop: 16,
+            }}
+            data-hover
+          >
+            REQUEST ACCESS
+          </p>
 
           {error && (
             <motion.p
@@ -267,7 +251,7 @@ export default function LoginPage() {
               style={{
                 fontFamily: 'var(--font-ui)',
                 fontSize: 11,
-                color: 'rgba(201,169,110,0.6)',
+                color: 'rgba(184,150,90,0.5)',
                 textAlign: 'center',
                 marginTop: 16,
               }}
@@ -282,17 +266,19 @@ export default function LoginPage() {
       <p
         style={{
           position: 'absolute',
-          bottom: 32,
+          bottom: 24,
           left: '50%',
           transform: 'translateX(-50%)',
           fontFamily: 'var(--font-ui)',
-          fontSize: 8,
+          fontSize: 7,
           letterSpacing: '0.3em',
-          color: '#2a2018',
+          color: 'var(--gold-muted)',
+          opacity: 0.4,
           textTransform: 'uppercase',
+          whiteSpace: 'nowrap',
         }}
       >
-        SOLUS &copy; 2025
+        SECURE CONNECTION ESTABLISHED
       </p>
     </div>
   )

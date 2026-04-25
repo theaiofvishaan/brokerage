@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import type { Contact } from '@/lib/supabase'
-import SolusNav from '@/components/SolusNav'
-import RevealText from '@/components/RevealText'
+import SolusLayout from '@/components/SolusLayout'
 
 function formatDate(d: string | null) {
   if (!d) return '—'
@@ -22,8 +22,8 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   background: 'transparent',
   border: 'none',
-  borderBottom: '0.5px solid var(--hairline)',
-  color: '#1A1510',
+  borderBottom: '0.5px solid var(--border)',
+  color: 'var(--text-dark)',
   fontFamily: 'var(--font-ui)',
   fontSize: 14,
   padding: '10px 0',
@@ -36,7 +36,7 @@ const labelStyle: React.CSSProperties = {
   fontSize: 8,
   letterSpacing: '0.4em',
   textTransform: 'uppercase',
-  color: '#8B7248',
+  color: 'var(--gold-dim)',
   display: 'block',
   marginBottom: 6,
 }
@@ -49,44 +49,19 @@ function InfoRow({ label, value, href }: { label: string; value: string | null |
       justifyContent: 'space-between',
       alignItems: 'baseline',
       padding: '16px 0',
-      borderBottom: '0.5px solid var(--hairline)',
+      borderBottom: '0.5px solid var(--border)',
     }}>
       <span style={labelStyle}>{label}</span>
       {href ? (
         <a href={href} target="_blank" rel="noopener noreferrer" style={{
-          fontFamily: 'var(--font-ui)', fontSize: 13, color: '#C9A96E', textDecoration: 'none',
+          fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--gold)', textDecoration: 'none',
         }}>
           {value}
         </a>
       ) : (
-        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: '#1A1510' }}>{value}</span>
+        <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13, color: 'var(--text-dark)' }}>{value}</span>
       )}
     </div>
-  )
-}
-
-function SaveFlash({ show }: { show: boolean }) {
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          style={{
-            fontFamily: 'var(--font-ui)',
-            fontSize: 8,
-            letterSpacing: '0.3em',
-            color: '#C9A96E',
-            textTransform: 'uppercase',
-            marginLeft: 12,
-          }}
-        >
-          Saved
-        </motion.span>
-      )}
-    </AnimatePresence>
   )
 }
 
@@ -101,10 +76,6 @@ export default function ContactDetailContent({ id }: { id: string }) {
   const [convoNotes, setConvoNotes] = useState('')
   const [meetingNotes, setMeetingNotes] = useState('')
   const [personalNotes, setPersonalNotes] = useState('')
-  const [flashConvo, setFlashConvo] = useState(false)
-  const [flashMeeting, setFlashMeeting] = useState(false)
-  const [flashPersonal, setFlashPersonal] = useState(false)
-
   const [editForm, setEditForm] = useState<Partial<Contact>>({})
 
   useEffect(() => {
@@ -120,18 +91,13 @@ export default function ContactDetailContent({ id }: { id: string }) {
     })
   }, [id])
 
-  function showFlash(setter: (v: boolean) => void) {
-    setter(true)
-    setTimeout(() => setter(false), 2000)
-  }
-
   async function saveConvo() {
     if (!contact) return
     const { data } = await supabase.from('contacts')
       .update({ last_conversation_date: convoDate || null, last_conversation_notes: convoNotes || null })
       .eq('id', id).select().single()
     if (data) setContact(data as Contact)
-    showFlash(setFlashConvo)
+    toast.success('Saved')
   }
 
   async function saveMeeting() {
@@ -140,7 +106,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
       .update({ notes: meetingNotes || null })
       .eq('id', id).select().single()
     if (data) setContact(data as Contact)
-    showFlash(setFlashMeeting)
+    toast.success('Saved')
   }
 
   async function savePersonal() {
@@ -149,7 +115,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
       .update({ personal_notes: personalNotes || null })
       .eq('id', id).select().single()
     if (data) setContact(data as Contact)
-    showFlash(setFlashPersonal)
+    toast.success('Saved')
   }
 
   async function saveEdit() {
@@ -159,6 +125,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
       .eq('id', id).select().single()
     if (data) setContact(data as Contact)
     setEditing(false)
+    toast.success('Contact updated')
   }
 
   function startEdit() {
@@ -180,276 +147,265 @@ export default function ContactDetailContent({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
-        <SolusNav />
-        <div style={{ padding: '120px 64px' }}>
+      <SolusLayout activePage="contacts">
+        <div style={{ minHeight: '100vh', background: 'var(--white)', padding: '80px 64px' }}>
           {[300, 200, 400, 160].map((w, i) => (
             <div key={i} className="skeleton-linen" style={{ height: i === 0 ? 60 : 12, width: w, marginBottom: 24 }} />
           ))}
         </div>
-      </div>
+      </SolusLayout>
     )
   }
 
   if (notFound || !contact) {
     return (
-      <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
-        <SolusNav />
-        <div style={{ padding: '160px 64px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-cormorant), var(--font-display)', fontSize: 32, fontWeight: 300, color: 'rgba(180,160,120,0.5)', marginBottom: 24 }}>
+      <SolusLayout activePage="contacts">
+        <div style={{ minHeight: '100vh', background: 'var(--white)', padding: '160px 64px', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 300, color: 'rgba(184,150,90,0.4)', marginBottom: 24 }}>
             Contact not found
           </p>
-          <Link href="/contacts" style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', color: '#C9A96E', textDecoration: 'none', textTransform: 'uppercase' }}>
-            &larr; Directory
+          <Link href="/contacts" style={{ fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', color: 'var(--gold)', textDecoration: 'none', textTransform: 'uppercase' }}>
+            &larr; DIRECTORY
           </Link>
         </div>
-      </div>
+      </SolusLayout>
     )
   }
 
   const fullName = [contact.first_name, contact.last_name].filter(Boolean).join(' ')
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF6' }}>
-      <SolusNav />
-
-      <main style={{ padding: '0 64px 80px' }}>
-        {/* Back */}
-        <motion.div
-          initial={{ opacity: 0, x: -8 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-          style={{ paddingTop: 100, marginBottom: 48 }}
-        >
-          <Link
-            href="/contacts"
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: 9,
-              letterSpacing: '0.3em',
-              color: '#C9A96E',
-              textDecoration: 'none',
-              textTransform: 'uppercase',
-            }}
+    <SolusLayout activePage="contacts">
+      <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
+        <main className="px-6 md:px-16 pb-20">
+          {/* Back */}
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="pt-16 md:pt-8"
+            style={{ marginBottom: 48 }}
           >
-            &larr; Directory
-          </Link>
-        </motion.div>
-
-        {/* Hero */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32, marginBottom: 64 }}>
-          <div style={{ flex: 1 }}>
-            <RevealText
-              text={fullName || 'Unknown'}
-              tag="h1"
+            <Link
+              href="/contacts"
               style={{
-                fontFamily: 'var(--font-cormorant), var(--font-display)',
-                fontSize: 56,
-                fontWeight: 300,
-                color: '#1A1510',
-                lineHeight: 1,
-                marginBottom: 10,
+                fontFamily: 'var(--font-ui)',
+                fontSize: 9,
+                letterSpacing: '0.3em',
+                color: 'var(--gold)',
+                textDecoration: 'none',
+                textTransform: 'uppercase',
               }}
-            />
-            {contact.organization && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: '#8a7a60', marginBottom: 12 }}
-              >
-                {contact.organization}
-              </motion.p>
-            )}
-            {contact.vendor_type && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                style={{
-                  display: 'inline-block',
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: 8,
-                  letterSpacing: '0.4em',
-                  textTransform: 'uppercase',
-                  color: '#8B7248',
-                  border: '0.5px solid var(--hairline)',
-                  padding: '5px 14px',
-                }}
-              >
-                {contact.vendor_type}
-              </motion.span>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', gap: 16, paddingTop: 8 }}>
-            {editing ? (
-              <>
-                <button
-                  onClick={saveEdit}
-                  style={{
-                    fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                    background: '#C9A96E', color: '#080806', border: 'none', padding: '10px 24px',
-                  }}
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setEditing(false)}
-                  style={{
-                    fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                    background: 'none', color: '#8B7248', border: '0.5px solid var(--hairline)', padding: '10px 24px',
-                  }}
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={startEdit}
-                style={{
-                  fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                  background: 'none', color: '#8B7248', border: '0.5px solid var(--hairline)', padding: '10px 24px',
-                  transition: 'color 0.2s, border-color 0.2s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#C9A96E'; e.currentTarget.style.borderColor = '#C9A96E' }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#8B7248'; e.currentTarget.style.borderColor = 'var(--hairline)' }}
-              >
-                Edit
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Two column layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 64 }}>
-          {/* Left: contact info */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h3 style={{
-              fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
-              textTransform: 'uppercase', color: '#8B7248', marginBottom: 4,
-            }}>
-              Contact Information
-            </h3>
-
-            {editing ? (
-              <div style={{ display: 'grid', gap: 24, paddingTop: 16 }}>
-                {([
-                  ['First Name', 'first_name'],
-                  ['Last Name', 'last_name'],
-                  ['Organization', 'organization'],
-                  ['Vendor Type', 'vendor_type'],
-                  ['Phone', 'phone'],
-                  ['Email', 'email'],
-                  ['Address', 'address'],
-                  ['City', 'city'],
-                  ['State', 'state'],
-                  ['Website', 'website'],
-                ] as [string, keyof Contact][]).map(([label, field]) => (
-                  <div key={field}>
-                    <label style={labelStyle}>{label}</label>
-                    <input
-                      value={(editForm[field] as string) ?? ''}
-                      onChange={e => setEditForm(f => ({ ...f, [field]: e.target.value }))}
-                      style={inputStyle}
-                      onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                      onBlur={e => (e.currentTarget.style.borderBottomColor = 'var(--hairline)')}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div>
-                <InfoRow label="Phone" value={contact.phone} href={contact.phone ? `tel:${contact.phone}` : undefined} />
-                <InfoRow label="Email" value={contact.email} href={contact.email ? `mailto:${contact.email}` : undefined} />
-                <InfoRow label="Address" value={contact.address} />
-                <InfoRow label="City" value={contact.city && contact.state ? `${contact.city}, ${contact.state}` : contact.city ?? contact.state} />
-                <InfoRow label="Website" value={contact.website} href={contact.website ?? undefined} />
-                <InfoRow label="Added" value={formatDate(contact.created_at)} />
-              </div>
-            )}
+            >
+              &larr; DIRECTORY
+            </Link>
           </motion.div>
 
-          {/* Right: notes */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            style={{ display: 'flex', flexDirection: 'column', gap: 40 }}
-          >
-            <NoteSection title="Last Conversation" flash={flashConvo}>
-              <div style={{ marginBottom: 12 }}>
-                <label style={labelStyle}>Date</label>
-                <input
-                  type="date"
-                  value={convoDate}
-                  onChange={e => setConvoDate(e.target.value)}
-                  onBlur={saveConvo}
-                  style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Notes</label>
+          {/* Hero */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32, marginBottom: 64, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <h1
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 56,
+                  fontWeight: 300,
+                  color: 'var(--text-dark)',
+                  lineHeight: 1,
+                  marginBottom: 10,
+                }}
+              >
+                {fullName || 'Unknown'}
+              </h1>
+              {contact.organization && (
+                <p style={{ fontFamily: 'var(--font-ui)', fontSize: 14, color: 'var(--text-muted)', marginBottom: 12 }}>
+                  {contact.organization}
+                </p>
+              )}
+              {contact.vendor_type && (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    fontFamily: 'var(--font-ui)',
+                    fontSize: 8,
+                    letterSpacing: '0.4em',
+                    textTransform: 'uppercase',
+                    color: 'var(--gold-dim)',
+                    border: '0.5px solid var(--border)',
+                    padding: '5px 14px',
+                  }}
+                >
+                  {contact.vendor_type}
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: 16, paddingTop: 8 }}>
+              {editing ? (
+                <>
+                  <button
+                    onClick={saveEdit}
+                    style={{
+                      fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
+                      background: 'var(--gold)', color: 'var(--obsidian)', border: 'none', padding: '10px 24px',
+                    }}
+                    data-hover
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditing(false)}
+                    style={{
+                      fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
+                      background: 'none', color: 'var(--gold-dim)', border: '0.5px solid var(--border)', padding: '10px 24px',
+                    }}
+                    data-hover
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={startEdit}
+                  style={{
+                    fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
+                    background: 'none', color: 'var(--gold-dim)', border: '0.5px solid var(--border)', padding: '10px 24px',
+                    transition: 'color 0.2s, border-color 0.2s',
+                  }}
+                  data-hover
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Two columns */}
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-8 md:gap-16">
+            {/* Left: contact info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <h3 style={{
+                fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
+                textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: 4,
+              }}>
+                Contact Information
+              </h3>
+
+              {editing ? (
+                <div style={{ display: 'grid', gap: 24, paddingTop: 16 }}>
+                  {([
+                    ['First Name', 'first_name'],
+                    ['Last Name', 'last_name'],
+                    ['Organization', 'organization'],
+                    ['Vendor Type', 'vendor_type'],
+                    ['Phone', 'phone'],
+                    ['Email', 'email'],
+                    ['Address', 'address'],
+                    ['City', 'city'],
+                    ['State', 'state'],
+                    ['Website', 'website'],
+                  ] as [string, keyof Contact][]).map(([label, field]) => (
+                    <div key={field}>
+                      <label style={labelStyle}>{label}</label>
+                      <input
+                        value={(editForm[field] as string) ?? ''}
+                        onChange={(e) => setEditForm(f => ({ ...f, [field]: e.target.value }))}
+                        style={inputStyle}
+                        onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                        onBlur={(e) => (e.currentTarget.style.borderBottomColor = 'var(--border)')}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  <InfoRow label="Phone" value={contact.phone} href={contact.phone ? `tel:${contact.phone}` : undefined} />
+                  <InfoRow label="Email" value={contact.email} href={contact.email ? `mailto:${contact.email}` : undefined} />
+                  <InfoRow label="Address" value={contact.address} />
+                  <InfoRow label="City" value={contact.city && contact.state ? `${contact.city}, ${contact.state}` : contact.city ?? contact.state} />
+                  <InfoRow label="Website" value={contact.website} href={contact.website ?? undefined} />
+                  <InfoRow label="Added" value={formatDate(contact.created_at)} />
+                </div>
+              )}
+            </motion.div>
+
+            {/* Right: notes */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 40 }}
+            >
+              <NoteSection title="Last Conversation">
+                <div style={{ marginBottom: 12 }}>
+                  <label style={labelStyle}>Date</label>
+                  <input
+                    type="date"
+                    value={convoDate}
+                    onChange={(e) => setConvoDate(e.target.value)}
+                    onBlur={saveConvo}
+                    style={inputStyle}
+                    onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Notes</label>
+                  <textarea
+                    value={convoNotes}
+                    onChange={(e) => setConvoNotes(e.target.value)}
+                    onBlur={saveConvo}
+                    rows={4}
+                    placeholder="What was discussed..."
+                    style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
+                    onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                  />
+                </div>
+              </NoteSection>
+
+              <NoteSection title="Meeting Notes">
                 <textarea
-                  value={convoNotes}
-                  onChange={e => setConvoNotes(e.target.value)}
-                  onBlur={saveConvo}
-                  rows={4}
-                  placeholder="What was discussed..."
+                  value={meetingNotes}
+                  onChange={(e) => setMeetingNotes(e.target.value)}
+                  onBlur={saveMeeting}
+                  rows={5}
+                  placeholder="Notes from meetings and site visits..."
                   style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
                 />
-              </div>
-            </NoteSection>
+              </NoteSection>
 
-            <NoteSection title="Meeting Notes" flash={flashMeeting}>
-              <textarea
-                value={meetingNotes}
-                onChange={e => setMeetingNotes(e.target.value)}
-                onBlur={saveMeeting}
-                rows={5}
-                placeholder="Notes from meetings and site visits..."
-                style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
-                onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-              />
-            </NoteSection>
-
-            <NoteSection title="Personal Notes" flash={flashPersonal}>
-              <textarea
-                value={personalNotes}
-                onChange={e => setPersonalNotes(e.target.value)}
-                onBlur={savePersonal}
-                rows={4}
-                placeholder="Family, preferences, key dates..."
-                style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
-                onFocus={e => (e.currentTarget.style.borderBottomColor = '#C9A96E')}
-              />
-            </NoteSection>
-          </motion.div>
-        </div>
-      </main>
-    </div>
+              <NoteSection title="Personal Notes">
+                <textarea
+                  value={personalNotes}
+                  onChange={(e) => setPersonalNotes(e.target.value)}
+                  onBlur={savePersonal}
+                  rows={4}
+                  placeholder="Family, preferences, key dates..."
+                  style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
+                  onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
+                />
+              </NoteSection>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+    </SolusLayout>
   )
 }
 
-function NoteSection({ title, children, flash }: { title: string; children: React.ReactNode; flash: boolean }) {
+function NoteSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
-        <h3 style={{
-          fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
-          textTransform: 'uppercase', color: '#8B7248',
-        }}>
-          {title}
-        </h3>
-        <SaveFlash show={flash} />
-      </div>
-      <div style={{ borderTop: '0.5px solid var(--hairline)', paddingTop: 16 }}>
+      <h3 style={{
+        fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
+        textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: 16,
+      }}>
+        {title}
+      </h3>
+      <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: 16 }}>
         {children}
       </div>
     </div>

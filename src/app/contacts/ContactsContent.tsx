@@ -9,7 +9,6 @@ import SolusLayout from '@/components/SolusLayout'
 import SplitText from '@/components/SplitText'
 import AddContactModal from '@/components/AddContactModal'
 import { formatPhone } from '@/lib/utils'
-import { useGsapEntrance } from '@/hooks/useGsapEntrance'
 
 const FILTER_PILLS = [
   'ALL CONTACTS',
@@ -71,8 +70,6 @@ export default function ContactsContent() {
   const [sort, setSort] = useState('name_asc')
   const [modalOpen, setModalOpen] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
-  const listRef = useRef<HTMLDivElement>(null)
-  useGsapEntrance(listRef, { stagger: 0.04, y: 24, trigger: true, start: 'top 90%' })
 
   const fetchContacts = useCallback(async () => {
     const { data } = await supabase.from('contacts').select('*').order('first_name', { ascending: true })
@@ -276,7 +273,7 @@ export default function ContactsContent() {
               </p>
             </div>
           ) : (
-            <div ref={listRef}>
+            <div>
               {filtered.map((contact, i) => (
                 <ContactRow key={contact.id} contact={contact} index={i} />
               ))}
@@ -331,11 +328,9 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
   const phone = rawPhone ? formatPhone(rawPhone) : ''
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.4) }}
+    <div
+      className="contact-row-animate"
+      style={{ animationDelay: `${Math.min(index * 0.03, 0.3)}s` }}
     >
       <Link href={`/contacts/${contact.id}`} style={{ textDecoration: 'none', display: 'block' }}>
         {/* Desktop row */}
@@ -492,6 +487,6 @@ function ContactRow({ contact, index }: { contact: Contact; index: number }) {
           <span style={{ fontSize: 16, color: 'var(--border)' }}>&rsaquo;</span>
         </div>
       </Link>
-    </motion.div>
+    </div>
   )
 }

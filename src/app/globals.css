@@ -243,6 +243,21 @@ input:-webkit-autofill:focus {
   .dashboard-greeting { font-size: 40px; }
 }
 
+@keyframes rowEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contact-row-animate {
+  animation: rowEntrance 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Hide scrollbar for filter containers */
 .filter-scroll::-webkit-scrollbar { display: none; }
 
@@ -304,6 +319,17 @@ input:-webkit-autofill:focus {
     padding-bottom: 80px;
     padding-left: 24px;
     padding-right: 24px;
+  }
+}
+
+@keyframes fadeInLogo {
+  from {
+    opacity: 0;
+    letter-spacing: 0.8em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.4em;
   }
 }
 

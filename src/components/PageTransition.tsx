@@ -9,8 +9,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
   const pathname = usePathname()
 
   useEffect(() => {
-    // Refresh ScrollTrigger on every route change so scroll-triggered
-    // animations recalculate correctly after the transition completes
+    window.dispatchEvent(new Event('solus:routechange'))
     const timer = setTimeout(() => {
       ScrollTrigger.refresh()
     }, 350)

@@ -58,9 +58,9 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
               style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 16,
-                letterSpacing: '0.3em',
+                letterSpacing: '0.25em',
                 color: 'var(--gold)',
-                fontWeight: 400,
+                fontWeight: 500,
               }}
             >
               SOLUS
@@ -69,9 +69,9 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
           <div
             style={{
               fontFamily: 'var(--font-ui)',
-              fontSize: 8,
-              letterSpacing: '0.4em',
-              color: 'var(--gold-muted)',
+              fontSize: 10,
+              letterSpacing: '0.3em',
+              color: 'rgba(184, 150, 90, 0.6)',
               marginTop: 4,
             }}
           >

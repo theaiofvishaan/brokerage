@@ -81,11 +81,11 @@ export default function DashboardContent() {
 
   return (
     <SolusLayout activePage="dashboard">
-      <div style={{ background: 'var(--linen)', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--linen)', minHeight: '100vh', paddingTop: '64px', paddingBottom: '80px' }}>
         {/* Hero */}
         <section
           style={{ position: 'relative', overflow: 'hidden' }}
-          className="pt-20 md:pt-20 px-6 md:px-12"
+          className="pt-20 md:pt-20"
         >
           <Spotlight
             className="-top-40 left-0 md:left-60 md:-top-20"
@@ -102,7 +102,7 @@ export default function DashboardContent() {
               letterSpacing: '0.4em',
               textTransform: 'uppercase',
               color: 'var(--text-muted)',
-              marginBottom: 20,
+              marginBottom: '48px',
             }}
           >
             {formatDateLine()}
@@ -118,22 +118,10 @@ export default function DashboardContent() {
               fontWeight: 300,
               letterSpacing: '-0.01em',
               color: 'var(--text-dark)',
+              marginBottom: '16px',
             }}
           />
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: 14,
-              color: 'var(--text-muted)',
-              marginTop: 12,
-            }}
-          >
-            Your executive summary is ready.
-          </motion.p>
         </section>
 
         {/* Marquee strip */}
@@ -141,7 +129,7 @@ export default function DashboardContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0, duration: 0.6 }}
-          className="mt-12 md:mt-12"
+          style={{ marginTop: '48px', marginBottom: 0 }}
         >
           <div
             style={{
@@ -185,6 +173,7 @@ export default function DashboardContent() {
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
             gap: 0,
+            marginTop: '64px',
           }}
           className="dashboard-grid"
         >
@@ -226,7 +215,7 @@ function DashboardCard({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          padding: '40px',
+          padding: '48px 40px',
           position: 'relative',
           overflow: 'hidden',
           borderRight: borderRight ? '1px solid var(--border)' : 'none',

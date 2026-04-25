@@ -33,13 +33,19 @@ export default function LenisProvider({
     gsap.ticker.add(tickerCallback)
     gsap.ticker.lagSmoothing(0)
 
-    // Refresh ScrollTrigger after Lenis init to prevent blank page on first load
-    setTimeout(() => {
-      ScrollTrigger.refresh()
-    }, 100)
+    // Double refresh to ensure correct initialization
+    setTimeout(() => ScrollTrigger.refresh(), 100)
+    setTimeout(() => ScrollTrigger.refresh(), 500)
+
+    const handleRouteRefresh = () => {
+      lenis.resize()
+      setTimeout(() => ScrollTrigger.refresh(), 350)
+    }
+    window.addEventListener('solus:routechange', handleRouteRefresh)
 
     return () => {
       gsap.ticker.remove(tickerCallback)
+      window.removeEventListener('solus:routechange', handleRouteRefresh)
       lenis.destroy()
     }
   }, [])

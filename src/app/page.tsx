@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { BackgroundBeams } from '@/components/ui/background-beams'
-import SplitText from '@/components/SplitText'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -73,12 +72,19 @@ export default function LoginPage() {
       >
         {/* Logo block */}
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <SplitText
-            text="SOLUS"
-            tag="h1"
-            delay={0.3}
-            className="solus-wordmark"
-          />
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(52px, 8vw, 72px)',
+              fontWeight: 300,
+              letterSpacing: '0.4em',
+              color: 'var(--gold)',
+              whiteSpace: 'nowrap',
+              animation: 'fadeInLogo 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both',
+            }}
+          >
+            SOLUS
+          </h1>
           <div
             style={{
               width: 60,

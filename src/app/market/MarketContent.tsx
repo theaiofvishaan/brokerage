@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
 
-const RENTCAST_KEY = '1a0dd61b5fe74d0fad22d18f72d78683'
 
 interface AVMResult {
   price: number
@@ -61,15 +60,9 @@ export default function MarketContent() {
     setError(null)
 
     try {
-      const params = new URLSearchParams({ address: address.trim(), propertyType: 'Single Family' })
-
       const [avmRes, compsRes] = await Promise.all([
-        fetch(`https://api.rentcast.io/v1/avm/value?${params}`, {
-          headers: { 'X-Api-Key': RENTCAST_KEY },
-        }),
-        fetch(`https://api.rentcast.io/v1/avm/sale/comparables?${params}&limit=5`, {
-          headers: { 'X-Api-Key': RENTCAST_KEY },
-        }),
+        fetch(`/api/market?${new URLSearchParams({ address: address.trim(), type: 'value' })}`),
+        fetch(`/api/market?${new URLSearchParams({ address: address.trim(), type: 'comparables' })}`),
       ])
 
       if (!avmRes.ok) {

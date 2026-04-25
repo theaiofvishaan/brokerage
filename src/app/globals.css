@@ -45,8 +45,8 @@
   padding: 0;
 }
 
-* {
-  cursor: none !important;
+@media (hover: hover) and (pointer: fine) {
+  * { cursor: none !important; }
 }
 
 html {

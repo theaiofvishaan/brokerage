@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function ClientCursor() {
   const dotRef = useRef<HTMLDivElement>(null)
@@ -9,11 +9,11 @@ export default function ClientCursor() {
   const ringPos = useRef({ x: -100, y: -100 })
   const hoveredRef = useRef(false)
   const rafRef = useRef<number>(0)
-  const isTouchRef = useRef(false)
+  const [isTouch, setIsTouch] = useState(false)
 
   useEffect(() => {
     if ('ontouchstart' in window) {
-      isTouchRef.current = true
+      setIsTouch(true)
       return
     }
 
@@ -58,7 +58,7 @@ export default function ClientCursor() {
     }
   }, [])
 
-  if (typeof window !== 'undefined' && 'ontouchstart' in window) return null
+  if (isTouch) return null
 
   return (
     <>

@@ -18,12 +18,6 @@ interface Document {
 const CATEGORIES = ['General', 'Pitches', 'Legal', 'Research', 'Templates', 'Market Data']
 const FILTER_PILLS = ['ALL', 'PITCHES', 'LEGAL', 'RESEARCH', 'TEMPLATES', 'MARKET DATA']
 
-const SEED_DOC = {
-  title: 'SOLUS — Shared Drive',
-  category: 'General',
-  description: 'Main shared Google Drive folder',
-  drive_url: 'https://drive.google.com/drive/folders/1_Frm1uNKTD_iNK6ZWepT3NOjjrVVLTGj?usp=sharing',
-}
 
 const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-ui)',
@@ -53,31 +47,15 @@ export default function DocumentsContent() {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('ALL')
   const [modalOpen, setModalOpen] = useState(false)
-  const [seeded, setSeeded] = useState(false)
 
   const fetchDocuments = useCallback(async () => {
     const { data } = await supabase
       .from('documents')
       .select('*')
       .order('created_at', { ascending: false })
-    if (data) {
-      setDocuments(data as Document[])
-      if (data.length === 0 && !seeded) {
-        setSeeded(true)
-        const { data: { user } } = await supabase.auth.getUser()
-        await supabase.from('documents').insert({
-          ...SEED_DOC,
-          added_by: user?.id ?? null,
-        })
-        const { data: refreshed } = await supabase
-          .from('documents')
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (refreshed) setDocuments(refreshed as Document[])
-      }
-    }
+    if (data) setDocuments(data as Document[])
     setLoading(false)
-  }, [seeded])
+  }, [])
 
   useEffect(() => { fetchDocuments() }, [fetchDocuments])
 
@@ -131,12 +109,11 @@ export default function DocumentsContent() {
             {!loading && filtered.length === 0 && (
               <div style={{ padding: '80px 0', textAlign: 'center' }}>
                 <p style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 28,
-                  fontWeight: 300,
-                  color: 'rgba(184,150,90,0.4)',
+                  fontFamily: 'var(--font-ui)',
+                  fontSize: 13,
+                  color: 'var(--text-muted)',
                 }}>
-                  No documents found
+                  {documents.length === 0 ? 'No documents added yet.' : 'No documents found'}
                 </p>
               </div>
             )}

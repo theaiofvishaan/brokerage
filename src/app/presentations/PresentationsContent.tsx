@@ -72,7 +72,7 @@ export default function PresentationsContent() {
   return (
     <SolusLayout activePage="presentations">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
-        <main className="px-6 md:px-16">
+        <main className="px-6 md:px-12">
           <div className="pt-16 md:pt-16 pb-8">
             <h1
               style={{
@@ -109,34 +109,35 @@ export default function PresentationsContent() {
         </main>
 
         {/* FAB — desktop only */}
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 20 }}
-          onClick={() => setModalOpen(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.94 }}
-          className="hidden md:flex"
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            width: 52,
-            height: 52,
-            borderRadius: '50%',
-            background: 'var(--gold)',
-            color: 'var(--obsidian)',
-            border: 'none',
-            fontSize: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
-            zIndex: 50,
-          }}
-          data-hover
-        >
-          +
-        </motion.button>
+        <div className="fab-wrapper hidden md:block" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+          <span className="fab-tooltip">Add Presentation</span>
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 20 }}
+            onClick={() => setModalOpen(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.94 }}
+            title="Add Presentation"
+            aria-label="Add Presentation"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: '50%',
+              background: 'var(--gold)',
+              color: 'var(--obsidian)',
+              border: 'none',
+              fontSize: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
+            }}
+            data-hover
+          >
+            +
+          </motion.button>
+        </div>
 
         <AddPresentationModal
           open={modalOpen}
@@ -163,7 +164,7 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
         onMouseLeave={() => setHovered(false)}
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr auto auto',
+          gridTemplateColumns: '1fr auto auto auto',
           alignItems: 'center',
           gap: 32,
           padding: '28px 16px',
@@ -175,7 +176,7 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
         <div>
           <div style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: 400,
             color: 'var(--text-dark)',
             lineHeight: 1.2,
@@ -205,6 +206,15 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
           {p.status === 'In Preparation' ? 'IN PREPARATION' : (p.status ?? '—')}
         </span>
 
+        <span style={{
+          fontFamily: 'var(--font-ui)',
+          fontSize: 10,
+          color: 'var(--text-muted)',
+          whiteSpace: 'nowrap',
+        }}>
+          {new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </span>
+
         {p.external_url ? (
           <motion.a
             href={p.external_url}
@@ -220,7 +230,7 @@ function PresentationRow({ presentation: p, index }: { presentation: Presentatio
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            &nearr;
+            {'↗'}
           </motion.a>
         ) : (
           <span style={{ width: 24 }} />

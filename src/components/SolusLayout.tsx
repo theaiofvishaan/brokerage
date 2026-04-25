@@ -46,11 +46,9 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
           height: '100vh',
           background: 'var(--sidebar)',
           borderRight: '0.5px solid var(--border)',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: 100,
+          zIndex: 50,
         }}
-        className="hidden md:flex"
+        className="hidden md:flex md:flex-col"
       >
         {/* Logo */}
         <div style={{ padding: '32px 24px' }}>
@@ -149,7 +147,7 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
 
       {/* Mobile top bar */}
       <header
-        className="md:hidden"
+        className="flex items-center justify-center md:hidden"
         style={{
           position: 'fixed',
           top: 0,
@@ -157,10 +155,7 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
           right: 0,
           height: 56,
           background: activePage === 'market' ? 'var(--obsidian)' : 'var(--linen)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 100,
+          zIndex: 50,
           borderBottom: '0.5px solid var(--border)',
         }}
       >
@@ -178,7 +173,7 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
 
       {/* Mobile bottom tab bar */}
       <nav
-        className="md:hidden"
+        className="flex items-center md:hidden"
         style={{
           position: 'fixed',
           bottom: 0,
@@ -189,10 +184,7 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderTop: '0.5px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          zIndex: 100,
+          zIndex: 50,
         }}
       >
         {NAV_ITEMS.map((item) => {
@@ -210,9 +202,10 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
                 alignItems: 'center',
                 gap: 4,
                 textDecoration: 'none',
-                minWidth: 44,
+                flex: 1,
                 minHeight: 44,
                 justifyContent: 'center',
+                overflow: 'hidden',
               }}
             >
               <Icon
@@ -223,9 +216,15 @@ export default function SolusLayout({ children, activePage }: SolusLayoutProps) 
               <span
                 style={{
                   fontFamily: 'var(--font-ui)',
-                  fontSize: 8,
-                  letterSpacing: '0.2em',
+                  fontSize: 7,
+                  letterSpacing: '0.08em',
                   color: isActive ? 'var(--gold)' : 'var(--text-muted)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '100%',
+                  textAlign: 'center',
+                  padding: '0 2px',
                 }}
               >
                 {item.label}

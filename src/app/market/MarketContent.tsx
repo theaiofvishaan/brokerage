@@ -99,7 +99,7 @@ export default function MarketContent() {
   return (
     <SolusLayout activePage="market">
       <div style={{ minHeight: '100vh', background: 'var(--obsidian)' }}>
-        <main className="px-6 md:px-16 pb-20">
+        <main className="px-6 md:px-12 pb-20">
           <div className="pt-16 md:pt-16 pb-8">
             <h1
               style={{
@@ -183,6 +183,26 @@ export default function MarketContent() {
               Search
             </button>
           </motion.form>
+
+          {/* Empty state */}
+          {!result && !loading && !error && (
+            <div style={{ textAlign: 'center', padding: '64px 0' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dim)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 16px' }}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <p style={{
+                fontFamily: 'var(--font-ui)',
+                fontSize: 13,
+                color: 'var(--gold-dim)',
+                maxWidth: 400,
+                margin: '0 auto',
+                lineHeight: 1.6,
+              }}>
+                Enter a Florida property address to retrieve AVM, rent estimate, and sold comparables.
+              </p>
+            </div>
+          )}
 
           {/* Loading skeletons */}
           <AnimatePresence>

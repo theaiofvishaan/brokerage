@@ -8,6 +8,7 @@ import type { Contact } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
 import { InView } from '@/components/ui/in-view'
 import AddContactModal from '@/components/AddContactModal'
+import { formatPhone } from '@/lib/utils'
 
 const FILTER_PILLS = [
   'ALL CONTACTS',
@@ -118,7 +119,7 @@ export default function ContactsContent() {
     <SolusLayout activePage="contacts">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
         {/* Header */}
-        <div className="pt-16 md:pt-16 px-6 md:px-16 pb-0">
+        <div className="pt-16 md:pt-16 px-6 md:px-12 pb-0">
           <h1
             style={{
               fontFamily: 'var(--font-display)',
@@ -154,7 +155,7 @@ export default function ContactsContent() {
         </div>
 
         {/* Search + Sort */}
-        <div className="px-6 md:px-16 mt-8" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+        <div className="px-6 md:px-12 mt-8" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <input
             type="text"
             value={search}
@@ -197,7 +198,7 @@ export default function ContactsContent() {
 
         {/* Filter pills */}
         <div
-          className="px-6 md:px-16"
+          className="px-6 md:px-12 filter-scroll"
           style={{
             marginTop: 20,
             display: 'flex',
@@ -208,7 +209,6 @@ export default function ContactsContent() {
             msOverflowStyle: 'none',
           }}
         >
-          <style>{`.filter-scroll::-webkit-scrollbar { display: none; }`}</style>
           {FILTER_PILLS.map((pill) => (
             <button
               key={pill}
@@ -269,34 +269,35 @@ export default function ContactsContent() {
         </div>
 
         {/* FAB — desktop only */}
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 20 }}
-          onClick={() => setModalOpen(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.94 }}
-          className="hidden md:flex"
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            width: 52,
-            height: 52,
-            borderRadius: '50%',
-            background: 'var(--gold)',
-            color: 'var(--obsidian)',
-            border: 'none',
-            fontSize: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
-            zIndex: 50,
-          }}
-          data-hover
-        >
-          +
-        </motion.button>
+        <div className="fab-wrapper hidden md:block" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+          <span className="fab-tooltip">Add Contact</span>
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 20 }}
+            onClick={() => setModalOpen(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.94 }}
+            title="Add Contact"
+            aria-label="Add Contact"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: '50%',
+              background: 'var(--gold)',
+              color: 'var(--obsidian)',
+              border: 'none',
+              fontSize: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
+            }}
+            data-hover
+          >
+            +
+          </motion.button>
+        </div>
 
         <AddContactModal
           open={modalOpen}
@@ -310,7 +311,8 @@ export default function ContactsContent() {
 
 function ContactRow({ contact, index }: { contact: Contact; index: number }) {
   const [hovered, setHovered] = useState(false)
-  const phone = contact.phone?.split(' ::: ')[0] ?? ''
+  const rawPhone = contact.phone?.split(' ::: ')[0] ?? ''
+  const phone = rawPhone ? formatPhone(rawPhone) : ''
 
   return (
     <motion.div

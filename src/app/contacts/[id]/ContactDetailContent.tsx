@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import { supabase } from '@/lib/supabase'
 import type { Contact } from '@/lib/supabase'
 import SolusLayout from '@/components/SolusLayout'
+import { formatPhone } from '@/lib/utils'
 
 function formatDate(d: string | null) {
   if (!d) return '—'
@@ -177,27 +178,30 @@ export default function ContactDetailContent({ id }: { id: string }) {
   return (
     <SolusLayout activePage="contacts">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
-        <main className="px-6 md:px-16 pb-20">
+        <main className="px-6 md:px-12 pb-20">
           {/* Back */}
           <motion.div
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
             className="pt-16 md:pt-8"
-            style={{ marginBottom: 48 }}
+            style={{ marginBottom: 16 }}
           >
             <Link
               href="/contacts"
+              className="back-link"
               style={{
                 fontFamily: 'var(--font-ui)',
-                fontSize: 9,
-                letterSpacing: '0.3em',
+                fontSize: 10,
+                letterSpacing: '0.25em',
                 color: 'var(--gold)',
                 textDecoration: 'none',
                 textTransform: 'uppercase',
+                padding: '8px 0',
+                display: 'inline-block',
               }}
             >
-              &larr; DIRECTORY
+              ← DIRECTORY
             </Link>
           </motion.div>
 
@@ -266,11 +270,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
               ) : (
                 <button
                   onClick={startEdit}
-                  style={{
-                    fontFamily: 'var(--font-ui)', fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase',
-                    background: 'none', color: 'var(--gold-dim)', border: '0.5px solid var(--border)', padding: '10px 24px',
-                    transition: 'color 0.2s, border-color 0.2s',
-                  }}
+                  className="ghost-btn"
                   data-hover
                 >
                   Edit
@@ -287,6 +287,15 @@ export default function ContactDetailContent({ id }: { id: string }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
+              {/* Avatar */}
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%', background: 'var(--gold)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--font-display)', fontSize: 22, color: 'white', marginBottom: 24,
+              }}>
+                {getInitials(contact.first_name, contact.last_name)}
+              </div>
+
               <h3 style={{
                 fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.45em',
                 textTransform: 'uppercase', color: 'var(--gold-dim)', marginBottom: 4,
@@ -322,12 +331,26 @@ export default function ContactDetailContent({ id }: { id: string }) {
                 </div>
               ) : (
                 <div>
-                  <InfoRow label="Phone" value={contact.phone} href={contact.phone ? `tel:${contact.phone}` : undefined} />
                   <InfoRow label="Email" value={contact.email} href={contact.email ? `mailto:${contact.email}` : undefined} />
-                  <InfoRow label="Address" value={contact.address} />
-                  <InfoRow label="City" value={contact.city && contact.state ? `${contact.city}, ${contact.state}` : contact.city ?? contact.state} />
+                  <InfoRow label="Phone" value={contact.phone ? formatPhone(contact.phone.split(' ::: ')[0]) : null} href={contact.phone ? `tel:${contact.phone}` : undefined} />
+                  <InfoRow label="Location" value={[contact.address, contact.city, contact.state].filter(Boolean).join(', ') || null} />
                   <InfoRow label="Website" value={contact.website} href={contact.website ?? undefined} />
-                  <InfoRow label="Added" value={formatDate(contact.created_at)} />
+                  {contact.vendor_type && (
+                    <div style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '16px 0', borderBottom: '0.5px solid var(--border)',
+                    }}>
+                      <span style={labelStyle}>Category</span>
+                      <span style={{
+                        fontFamily: 'var(--font-ui)', fontSize: 8, letterSpacing: '0.4em',
+                        textTransform: 'uppercase', color: 'var(--gold)',
+                        border: '0.5px solid var(--gold)', padding: '4px 12px',
+                      }}>
+                        {contact.vendor_type}
+                      </span>
+                    </div>
+                  )}
+                  <InfoRow label="Date Added" value={formatDate(contact.created_at)} />
                 </div>
               )}
             </motion.div>
@@ -362,6 +385,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                     style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
                     onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
                   />
+                  <span style={{ fontFamily: 'var(--font-ui)', fontSize: 8, color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>Autosaves</span>
                 </div>
               </NoteSection>
 
@@ -375,6 +399,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
                   onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
                 />
+                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 8, color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>Autosaves</span>
               </NoteSection>
 
               <NoteSection title="Personal Notes">
@@ -387,6 +412,7 @@ export default function ContactDetailContent({ id }: { id: string }) {
                   style={{ ...inputStyle, resize: 'none', lineHeight: 1.65, fontSize: 13 }}
                   onFocus={(e) => (e.currentTarget.style.borderBottomColor = 'var(--gold)')}
                 />
+                <span style={{ fontFamily: 'var(--font-ui)', fontSize: 8, color: 'var(--text-muted)', marginTop: 4, display: 'block' }}>Autosaves</span>
               </NoteSection>
             </motion.div>
           </div>

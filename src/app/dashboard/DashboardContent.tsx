@@ -58,7 +58,7 @@ export default function DashboardContent() {
         {/* Hero */}
         <section
           style={{ position: 'relative', overflow: 'hidden' }}
-          className="pt-20 md:pt-20 px-6 md:px-16"
+          className="pt-20 md:pt-20 px-6 md:px-12"
         >
           <Spotlight
             className="-top-40 left-0 md:left-60 md:-top-20"
@@ -89,18 +89,6 @@ export default function DashboardContent() {
           >
             {getGreeting()}
           </TextEffect>
-          <style>{`
-            .dashboard-greeting {
-              font-family: var(--font-display);
-              font-size: 72px;
-              font-weight: 300;
-              color: var(--text-dark);
-              line-height: 1;
-            }
-            @media (max-width: 767px) {
-              .dashboard-greeting { font-size: 40px; }
-            }
-          `}</style>
 
           <motion.p
             initial={{ opacity: 0 }}

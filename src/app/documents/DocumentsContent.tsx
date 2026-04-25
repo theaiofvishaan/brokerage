@@ -92,7 +92,7 @@ export default function DocumentsContent() {
   return (
     <SolusLayout activePage="documents">
       <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
-        <main className="px-6 md:px-16">
+        <main className="px-6 md:px-12">
           <div className="pt-16 md:pt-16 pb-8">
             <h1
               style={{
@@ -144,34 +144,35 @@ export default function DocumentsContent() {
         </main>
 
         {/* FAB — desktop only */}
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 20 }}
-          onClick={() => setModalOpen(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.94 }}
-          className="hidden md:flex"
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            width: 52,
-            height: 52,
-            borderRadius: '50%',
-            background: 'var(--gold)',
-            color: 'var(--obsidian)',
-            border: 'none',
-            fontSize: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
-            zIndex: 50,
-          }}
-          data-hover
-        >
-          +
-        </motion.button>
+        <div className="fab-wrapper hidden md:block" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+          <span className="fab-tooltip">Add Document</span>
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 20 }}
+            onClick={() => setModalOpen(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.94 }}
+            title="Add Document"
+            aria-label="Add Document"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: '50%',
+              background: 'var(--gold)',
+              color: 'var(--obsidian)',
+              border: 'none',
+              fontSize: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(184,150,90,0.25)',
+            }}
+            data-hover
+          >
+            +
+          </motion.button>
+        </div>
 
         <AddDocumentModal
           open={modalOpen}
